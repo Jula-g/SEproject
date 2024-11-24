@@ -9,6 +9,8 @@ import com.example.physioconsult.R
 import com.example.physioconsult.fragments.user.ARG_PARAM1
 import com.example.physioconsult.fragments.user.ARG_PARAM2
 
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Use the [Add.newInstance] factory method to
