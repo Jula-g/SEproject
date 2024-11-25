@@ -1,9 +1,8 @@
-package com.example.cognitiveapp.Register
+package com.example.physioconsult.login.SignUp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.physioconsult.login.SignUp.RegisterForm
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.FirebaseApp
 
