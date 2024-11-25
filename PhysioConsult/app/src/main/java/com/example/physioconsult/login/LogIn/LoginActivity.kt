@@ -1,16 +1,14 @@
-package com.example.cognitiveapp.LogIn
+package com.example.physioconsult.login.LogIn
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.physioconsult.login.LogIn.LogInForm
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
-
 
 /**
  * Activity class representing the login screen.
  */
-class LogInActivity : ComponentActivity() {
+class LoginActivity : ComponentActivity() {
 
     /**
      * Called when the activity is starting. This is where most initialization should go.

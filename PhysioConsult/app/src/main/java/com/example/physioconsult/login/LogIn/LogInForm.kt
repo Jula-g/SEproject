@@ -32,8 +32,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cognitiveapp.Register.RegisterActivity
 import com.example.physioconsult.MainActivity
+import com.example.physioconsult.login.SignUp.RegisterActivity
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
 

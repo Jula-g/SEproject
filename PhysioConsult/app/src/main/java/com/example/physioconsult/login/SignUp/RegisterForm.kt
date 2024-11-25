@@ -35,8 +35,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cognitiveapp.LogIn.LogInActivity
 import com.example.physioconsult.MainActivity
+import com.example.physioconsult.login.LogIn.LoginActivity
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -94,7 +94,7 @@ fun RegisterForm() {
                 text = annotatedText,
                 fontSize = 16.sp,
                 modifier = Modifier.clickable {
-                    val intent = Intent(context, LogInActivity::class.java)
+                    val intent = Intent(context, LoginActivity::class.java)
                     context.startActivity(intent)
                 }
             )

@@ -12,23 +12,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PhysioConsult"
         tools:targetApi="31">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PhysioConsult">
+        </activity>
+
         <activity
             android:name=".login.SignUp.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.PhysioConsult">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:name=".login.LogIn.LoginActivity"
+            android:exported="true">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
-        <activity
-            android:name=".login.LoginActivity"
-            android:exported="false" />
     </application>
 
 </manifest>
