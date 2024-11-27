@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "972563361218",
+    "project_id": "physioconsult-2673a",
+    "storage_bucket": "physioconsult-2673a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972563361218:android:a4f8690aa76278da22ba5b",
+        "android_client_info": {
+          "package_name": "com.example.physioconsult"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvDyLBo5NK3v7gSUtrjQKsmzQ3xZ1ZFtQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
