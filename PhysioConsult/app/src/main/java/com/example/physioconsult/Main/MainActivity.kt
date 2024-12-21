@@ -1,4 +1,4 @@
-package com.example.physioconsult
+package com.example.physioconsult.Main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
