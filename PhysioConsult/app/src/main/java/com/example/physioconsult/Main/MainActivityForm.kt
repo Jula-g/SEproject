@@ -42,7 +42,13 @@ fun MainActivityForm() {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("", color = Color.White) },
+                    title = {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(75.dp)
+                        ) {
+                            Text("PhysioConsult", color = Color(0xFF84ACD8))
+                        }
+                    },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -52,12 +58,13 @@ fun MainActivityForm() {
                             )
                         }
                     },
-            )
+                )
             },
             bottomBar = {
                 BottomNavigationBar()
             }
-        ) { innerPadding ->
+        )
+        { innerPadding ->
             Content(Modifier.padding(innerPadding)) // Your main content
         }
     }
@@ -112,14 +119,14 @@ fun Content(modifier: Modifier = Modifier) {
                 .padding(8.dp)
         ) {
             Text(
-                text = "Ipsum Lorem",
+                text = "Welcome!",
                 fontSize = 24.sp,
                 color = Color.Black,
                 textAlign = TextAlign.Start,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                text = "Physio Consult is an app that speeds up process of physical body measurements, and assessments of it measurement.",
                 fontSize = 14.sp,
                 color = Color.Black,
                 textAlign = TextAlign.Start
