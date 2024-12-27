@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.physioconsult.MainActivity
+import com.example.physioconsult.fragments.user.add.Add
 import com.example.physioconsult.login.SignUp.RegisterActivity
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -129,6 +130,8 @@ fun LogInForm() {
  * @param credentials The user's login credentials.
  * @param context The context in which this function is called.
  */
+
+// changge back after testing
 fun checkCredentials(credentials: Credentials, context: Context) {
 
     if (credentials.isNotEmpty()) {
@@ -136,7 +139,7 @@ fun checkCredentials(credentials: Credentials, context: Context) {
         auth.signInWithEmailAndPassword(credentials.login, credentials.pwd)
             .addOnCompleteListener(context as Activity) { task ->
                 if (task.isSuccessful) {
-                    context.startActivity(Intent(context, MainActivity::class.java))
+                    context.startActivity(Intent(context, Add::class.java))
                     (context as Activity).finish()
                 } else {
                     Toast.makeText(context, "Login Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
@@ -146,6 +149,24 @@ fun checkCredentials(credentials: Credentials, context: Context) {
         Toast.makeText(context, "Wrong credentials", Toast.LENGTH_SHORT).show()
     }
 }
+
+//fun checkCredentials(credentials: Credentials, context: Context) {
+//
+//    if (credentials.isNotEmpty()) {
+//        val auth = FirebaseAuth.getInstance()
+//        auth.signInWithEmailAndPassword(credentials.login, credentials.pwd)
+//            .addOnCompleteListener(context as Activity) { task ->
+//                if (task.isSuccessful) {
+//                    context.startActivity(Intent(context, MainActivity::class.java))
+//                    (context as Activity).finish()
+//                } else {
+//                    Toast.makeText(context, "Login Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//    } else {
+//        Toast.makeText(context, "Wrong credentials", Toast.LENGTH_SHORT).show()
+//    }
+//}
 
 /**
  * Preview of the LogInForm composable function with light theme.
