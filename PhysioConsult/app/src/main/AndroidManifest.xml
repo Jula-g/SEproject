@@ -25,6 +25,9 @@
             android:name=".login.SignUp.RegisterActivity"
             android:exported="false" />
         <activity
+            android:name=".fragments.user.add.Add"
+            android:exported="false" />
+        <activity
             android:name=".login.LogIn.LoginActivity"
             android:exported="true">
 
