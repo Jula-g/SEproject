@@ -1,5 +1,9 @@
 package com.example.physioconsult.Main
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,14 +22,20 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.physioconsult.R
 import com.example.physioconsult.SideNavMenu.SideNavigationMenu
+import com.example.physioconsult.fragments.user.add.Add
+import com.example.physioconsult.login.LogIn.Credentials
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
+import com.google.firebase.auth.FirebaseAuth
+
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +83,7 @@ fun MainActivityForm() {
 
 @Composable
 fun Content(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -95,7 +106,7 @@ fun Content(modifier: Modifier = Modifier) {
                     color = Color.Black
                 )
                 Text(
-                    text = "User Smith",
+                    text = "User (not done)",
                     fontSize = 20.sp,
                     color = Color.Black
                 )
@@ -144,13 +155,15 @@ fun Content(modifier: Modifier = Modifier) {
         }
         val imageCamera: Painter =
             painterResource(id = R.drawable.focus)
+
         // Take Image Section
         CardButtonCamera(
             text = "Take Assessment",
             title = "Assessment",
             description = "By creating a new Assessment you can measure your posture...",
             icon = imageCamera,
-            backgroundColor = Color(0xFF84ACD8) // Light Blue
+            backgroundColor = Color(0xFF84ACD8), // Light Blue
+            onClick = { navigatePhoto(context) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -174,4 +187,8 @@ fun LogInFormPreviewDark() {
     PhysioConsultTheme {
         MainActivityForm()
     }
+}
+
+fun navigatePhoto(context: Context) {
+    context.startActivity(Intent(context, Add::class.java))
 }
