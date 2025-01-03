@@ -31,15 +31,22 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
         viewBinding = true
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            pickFirsts += "META-INF/native-image/org.mongodb/bson/native-image.properties" // add this
+        }
     }
 }
 
@@ -47,6 +54,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") // add this
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -69,7 +77,10 @@ dependencies {
 
     implementation ("androidx.navigation:navigation-compose:2.7.1")
     implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
-
+    implementation (libs.mongodb.driver.sync)
+    implementation (libs.mongodb.driver.kotlin.coroutine) // Check for the latest version
+    implementation("org.litote.kmongo:kmongo:5.1.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
     implementation("androidx.compose.material:material-icons-extended:1.4.3")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
