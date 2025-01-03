@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -25,14 +26,19 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.Firebase
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.text.SimpleDateFormat
+import android.util.Base64
+
 import java.util.Date
 import java.util.Locale
 
@@ -129,7 +135,11 @@ class Add : ComponentActivity() {
                     onConfirmClick = {
                         iteration++
                         Log.e("CONFIRMBUTTONPRESSED", "1")
-                        uploadImageToFirebase(imageUri.value)
+//                      uploadImageToFirebase(imageUri.value)
+                        var string = convertImageUriToBase64(imageUri.value)
+                        if (string != null) {
+                            uploadImageToFirebase(string)
+                        }
                     },
                     imageUri2 = imageUri.value,
                     imageUri1 = pictureUri.value
@@ -200,36 +210,87 @@ class Add : ComponentActivity() {
         }
     }
 
-    private fun uploadImageToFirebase(imageUri: Uri?) {
-        val storageRef = FirebaseStorage.getInstance().reference
+//    private fun uploadImageToFirebase(imageUri: Uri?) {
+//        val storageRef = FirebaseStorage.getInstance().reference
+//
+//        Log.e("UPLOAD", "1")
+//        if (imageUri == null) {
+//            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show()
+//            return
+//        }else {
+//            val imageRef = storageRef.child("images/${System.currentTimeMillis()}.jpg")
+//            val inputStream = contentResolver.openInputStream(imageUri)
+//            val uploadTask = inputStream?.let { imageRef.putStream(it) }
+//
+//
+//            Log.e("URIstatus", "Uri: ${imageUri}")
+//            Log.e("URIstatus", "inputstream: ${inputStream}")
+//            Log.e("URIstatus", "uploadtask: ${uploadTask}")
+//            Log.e("URIstatus", "imageref: ${imageRef}")
+//            uploadTask?.addOnSuccessListener { taskSnapshot ->
+//                    imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+//                        // Save the download URL to Firebase Realtime Database or Firestore
+//                        saveImageUriToDatabase(downloadUri.toString())
+//                    }
+//                    Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+//                }
+//                ?.addOnFailureListener { e ->
+//                    Log.e("FirebaseStorage", "Failed to upload image", e)
+//                    Toast.makeText(this, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
+//                }
+//        }
+//    }
 
-        Log.e("UPLOAD", "1")
-        if (imageUri == null) {
-            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show()
-            return
-        }else {
-            val imageRef = storageRef.child("images/${System.currentTimeMillis()}.jpg")
-            val inputStream = contentResolver.openInputStream(imageUri)
-            val uploadTask = inputStream?.let { imageRef.putStream(it) }
+    private fun convertImageUriToBase64(uri: Uri?): String? {
+        if (uri != null) {
+            try {
+                // Open input stream to the image URI
+                val inputStream = contentResolver.openInputStream(uri)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
 
+                // Compress the bitmap to a lower quality (e.g., 50% quality)
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)  // Reducing the quality to 50%
 
-            Log.e("URIstatus", "Uri: ${imageUri}")
-            Log.e("URIstatus", "inputstream: ${inputStream}")
-            Log.e("URIstatus", "uploadtask: ${uploadTask}")
-            Log.e("URIstatus", "imageref: ${imageRef}")
-            uploadTask?.addOnSuccessListener { taskSnapshot ->
-                    imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                        // Save the download URL to Firebase Realtime Database or Firestore
-                        saveImageUriToDatabase(downloadUri.toString())
-                    }
-                    Toast.makeText(this, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
-                }
-                ?.addOnFailureListener { e ->
-                    Log.e("FirebaseStorage", "Failed to upload image", e)
-                    Toast.makeText(this, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+                val byteArray = byteArrayOutputStream.toByteArray()
+
+                // Encode the byte array to Base64 string
+                return Base64.encodeToString(byteArray, Base64.DEFAULT)
+            } catch (e: Exception) {
+                Log.e("ConvertToBase64", "Error converting image to Base64", e)
+            }
         }
+        return null
     }
+
+    private fun uploadImageToFirebase(string: String) {
+        // Reference to Firestore database
+        val db = FirebaseFirestore.getInstance()
+
+        // Sample text data
+        val sampleText = string
+
+        // Reference to a Firestore collection (e.g., "sampleTexts")
+        val textDataRef = db.collection("sampleTexts").document() // Document will be auto-generated
+
+        // Set the text data to Firestore
+        val data = hashMapOf(
+            "text" to sampleText
+        )
+
+        // Save the data to Firestore
+        textDataRef.set(data)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Text data uploaded successfully to Firestore", Toast.LENGTH_SHORT).show()
+                Log.e("Firestore", "Text data uploaded successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Failed to upload text data", e)
+                Toast.makeText(this, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
 
     private fun saveImageUriToDatabase(imageUri: String) {
         val data = hashMapOf(

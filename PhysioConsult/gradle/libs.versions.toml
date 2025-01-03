@@ -4,6 +4,7 @@ firebaseAuthKtx = "23.1.0"
 firebaseFirestore = "24.9.1"
 firebaseFirestoreKtx = "25.1.1"
 fragmentKtx = "1.6.2"
+kmongoCoroutineAndroid = "4.8.0"
 kotlin = "2.0.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -19,6 +20,8 @@ material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
 materialIconsExtended = "1.4.3"
+mongodbDriverKotlinCoroutine = "4.10.1"
+mongodbDriverSync = "4.10.0"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
 googleGmsGoogleServices = "4.4.2"
@@ -51,6 +54,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+kmongo-coroutine-android = { module = "org.litote.kmongo:kmongo-coroutine-android", version.ref = "kmongoCoroutineAndroid" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
@@ -60,6 +64,8 @@ firebase-storage = { group = "com.google.firebase", name = "firebase-storage", v
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+mongodb-driver-kotlin-coroutine = { module = "org.mongodb:mongodb-driver-kotlin-coroutine", version.ref = "mongodbDriverKotlinCoroutine" }
+mongodb-driver-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodbDriverSync" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
