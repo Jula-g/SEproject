@@ -1,5 +1,7 @@
 package com.example.physioconsult.Main
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -17,11 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.physioconsult.fragments.therapist.ViewImage
+import com.example.physioconsult.fragments.user.add.Add
+
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun BottomNavigationBar() {
+    val context = LocalContext.current
     Surface(
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         color = Color(0xFF84ACD8)
@@ -52,7 +59,7 @@ fun BottomNavigationBar() {
                 icon = { NavigationBarIcon(Icons.Default.History, "History Icon") },
                 label = { Text("History") },
                 selected = false,
-                onClick = { /* history */ }
+                onClick = { navigateViewPhoto(context) }
             )
         }
     }
@@ -68,4 +75,8 @@ fun NavigationBarIcon(
         contentDescription = contentDescription,
         tint = Color.Black
     )
+}
+
+fun navigateViewPhoto(context: Context) {
+    context.startActivity(Intent(context, ViewImage::class.java))
 }
