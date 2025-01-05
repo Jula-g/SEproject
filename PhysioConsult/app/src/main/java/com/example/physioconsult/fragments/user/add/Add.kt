@@ -9,7 +9,9 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -38,14 +40,21 @@ import java.io.IOException
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import android.util.Base64
+import androidx.compose.ui.platform.LocalContext
+import com.example.physioconsult.Main.MainActivity
 
 import java.util.Date
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 class Add : ComponentActivity() {
     private var iteration: Int = 1
     private lateinit var cameraResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var galleryResultLauncher: ActivityResultLauncher<Intent>
+    private val currentDate = Date() // Get the current date
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    private val imageDate = dateFormat.format(currentDate)
 
     private val db = Firebase.firestore
     private var field = ""
@@ -54,31 +63,19 @@ class Add : ComponentActivity() {
     private val imageUri = mutableStateOf<Uri?>(null)
     private val tempUri = mutableStateOf<Uri?>(null)
 
+    private var frontImage =""
+    private var backImage =""
+    private var sideImage =""
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        when (iteration) {
-            1 -> {
-                pictureUri.value =
-                    Uri.parse("android.resource://com.example.physioconsult/drawable/front_view")
-                field = "FrontURL"
-            }
 
-            2 -> {
-                pictureUri.value =
-                    Uri.parse("android.resource://com.example.physioconsult/drawable/back_view")
-                field = "BackURL"
-            }
+        setInitialPictureAndField("")
 
-            3 -> {
-                pictureUri.value =
-                    Uri.parse("android.resource://com.example.physioconsult/drawable/side_view")
-                field = "SideURL"
-            }
-        }
 
-        if (iteration == 3)
-            iteration = 1
+
 
         cameraResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -119,26 +116,35 @@ class Add : ComponentActivity() {
                     onChooseFromGalleryClick = {
                         if (ContextCompat.checkSelfPermission(
                                 this,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            )
-                            != PackageManager.PERMISSION_GRANTED
-                        ) {
+                                Manifest.permission.READ_MEDIA_IMAGES
+                            ) != PackageManager.PERMISSION_GRANTED) {
+                            Log.e("CHECK", "CHECK")
                             ActivityCompat.requestPermissions(
                                 this,
-                                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1
+                                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                                1
                             )
                         } else {
                             chooseFromGallery()
                         }
 
+
                     },
                     onConfirmClick = {
-                        iteration++
+
                         Log.e("CONFIRMBUTTONPRESSED", "1")
 //                      uploadImageToFirebase(imageUri.value)
                         var string = convertImageUriToBase64(imageUri.value)
+
+                        iteration++
+
                         if (string != null) {
-                            uploadImageToFirebase(string)
+                            setInitialPictureAndField(string)
+                        }
+
+                        if (iteration >= 4){
+                            uploadImageToFirebase()
+
                         }
                     },
                     imageUri2 = imageUri.value,
@@ -173,6 +179,7 @@ class Add : ComponentActivity() {
 
 
     fun chooseFromGallery() {
+        Log.e("FUNCTION", "FUNCTION")
         val intent = Intent()
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
@@ -244,13 +251,12 @@ class Add : ComponentActivity() {
     private fun convertImageUriToBase64(uri: Uri?): String? {
         if (uri != null) {
             try {
-                // Open input stream to the image URI
-                val inputStream = contentResolver.openInputStream(uri)
-                val bitmap = BitmapFactory.decodeStream(inputStream)
+                // Get rotated bitmap
+                val rotatedBitmap = rotateImageIfRequired(this, uri)
 
-                // Compress the bitmap to a lower quality (e.g., 50% quality)
+                // Compress the rotated bitmap to a lower quality (e.g., 50% quality)
                 val byteArrayOutputStream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)  // Reducing the quality to 50%
+                rotatedBitmap?.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream)
 
                 val byteArray = byteArrayOutputStream.toByteArray()
 
@@ -263,50 +269,101 @@ class Add : ComponentActivity() {
         return null
     }
 
-    private fun uploadImageToFirebase(string: String) {
-        // Reference to Firestore database
+
+    private fun uploadImageToFirebase() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val uid = currentUser?.uid
+
+
+
         val db = FirebaseFirestore.getInstance()
 
-        // Sample text data
-        val sampleText = string
 
-        // Reference to a Firestore collection (e.g., "sampleTexts")
-        val textDataRef = db.collection("sampleTexts").document() // Document will be auto-generated
+        // Reference to a Firestore collection
+        val textDataRef =
+            uid?.let { db.collection(it).document(imageDate) } // Document will be auto-generated
+
+        val field = arrayOf("Front", "Back", "Side")
+
+        val images = arrayOf(frontImage, backImage, sideImage)
+
 
         // Set the text data to Firestore
-        val data = hashMapOf(
-            "text" to sampleText
-        )
+        val data = mutableMapOf<String, String>()
+        for (i in field.indices) {
+            data[field[i]] = images[i] // Assign the field to its corresponding image
+        }
 
         // Save the data to Firestore
-        textDataRef.set(data)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Text data uploaded successfully to Firestore", Toast.LENGTH_SHORT).show()
-                Log.e("Firestore", "Text data uploaded successfully")
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "Failed to upload text data", e)
-                Toast.makeText(this, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
+        if (textDataRef != null) {
+            textDataRef.set(data)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Image uploaded", Toast.LENGTH_SHORT).show()
+                    navigateMain(this)
 
-
-
-    private fun saveImageUriToDatabase(imageUri: String) {
-        val data = hashMapOf(
-            field to imageUri
-        )
-
-        db.collection("assesments").add(data).addOnSuccessListener { reference ->
-            Log.d("ImageURLsave", "DocumentSnapshot successfully written with ID: ${reference.id}")
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
         }
-            .addOnFailureListener { e ->
-                Log.w("ImageURLsave", "Error writing document", e)
-            }
     }
 
 
 
+
+
+
+    private fun rotateImageIfRequired(context: Context, imageUri: Uri): Bitmap? {
+        val inputStream = context.contentResolver.openInputStream(imageUri) ?: return null
+
+        // Read EXIF metadata
+        val exif = ExifInterface(inputStream)
+        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+        val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(imageUri))
+
+        return when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270)
+            else -> bitmap
+        }
+    }
+
+    private fun rotateImage(bitmap: Bitmap, degrees: Int): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees.toFloat())
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    private fun setInitialPictureAndField(imageString: String) {
+        when (iteration) {
+            1 -> {
+                pictureUri.value = Uri.parse("android.resource://com.example.physioconsult/drawable/front_view")
+                field = "FrontURL"
+
+            }
+            2 -> {
+                pictureUri.value = Uri.parse("android.resource://com.example.physioconsult/drawable/back_view")
+                field = "BackURL"
+                frontImage = imageString
+
+            }
+            3 -> {
+                pictureUri.value = Uri.parse("android.resource://com.example.physioconsult/drawable/side_view")
+                field = "SideURL"
+                backImage = imageString
+
+            }
+            4 -> {
+                sideImage = imageString
+            }
+        }
+    }
+
+    fun navigateMain(context: Context) {
+        context.startActivity(Intent(context, MainActivity::class.java))
+    }
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
