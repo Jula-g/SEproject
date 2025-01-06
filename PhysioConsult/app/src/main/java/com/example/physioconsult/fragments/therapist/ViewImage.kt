@@ -80,6 +80,7 @@ class ViewImage : ComponentActivity() {
                 AddPhoto(
                     onTakePhotoClick = {
                         retrieveImageFromFirestore()
+                        Log.e("RETRIEVING", "FUNCTION CALLED AT ALL")
                     },
                     onChooseFromGalleryClick = {
                         // Code for selecting from gallery (if needed)
@@ -99,14 +100,16 @@ class ViewImage : ComponentActivity() {
     // Retrieve image from Firestore (Base64)
     private fun retrieveImageFromFirestore() {
         val db = FirebaseFirestore.getInstance()
-        val docRef = db.collection("sampleTexts").document("jgcu660xn44LPH1xDTi4")
+        val docRef = db.collection("UggROlFp0DbD60bi6M2GG8ugS9G3").document("2025-01-06 20:11")
 
-
+        Log.e("RETRIEVING", "FUNCTION CALLED")
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    val base64String = documentSnapshot.getString("text")
-
+                    val base64String = documentSnapshot.getString("Back")
+                    if (base64String != null) {
+                        Log.e("RETRIEVING", base64String)
+                    }
                     // Convert Base64 string to Bitmap
                     if (base64String != null) {
                         val bitmap = convertBase64ToBitmap(base64String)

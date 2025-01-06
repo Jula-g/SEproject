@@ -29,6 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.physioconsult.Main.CardButtonAppointments
+import com.example.physioconsult.Main.navigatePhoto
+import com.example.physioconsult.Main.navigateViewPhoto
 import com.example.physioconsult.R
 import com.example.physioconsult.SideNavMenu.SideNavigationMenu
 import com.example.physioconsult.fetchUserData
@@ -46,7 +48,7 @@ fun PhysiotherapistForm() {
     val userId = auth.currentUser?.uid
     val name = remember { mutableStateOf("Name") }
     val surname = remember { mutableStateOf("Surname") }
-
+    val context = LocalContext.current
     LaunchedEffect(userId) {
         if (userId != null) {
             val userData = fetchUserData(userId)
@@ -161,7 +163,8 @@ fun PhysiotherapistForm() {
                     description = "Get an assessment from the patient",
                     icon = Icons.Default.ContentPaste,
                     backgroundColor = Color(0xFF84ACD8),
-                    iconTint = Color.White
+                    iconTint = Color.White,
+                    onClick = { navigateViewPhoto(context) }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -172,7 +175,8 @@ fun PhysiotherapistForm() {
                     description = "View the list of all your patients along with their assessments",
                     icon = Icons.Default.PeopleOutline,
                     backgroundColor = Color(0xFF84ACD8),
-                    iconTint = Color.White
+                    iconTint = Color.White,
+                    onClick = {}
                 )
             }
         }
