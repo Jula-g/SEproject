@@ -45,6 +45,7 @@ import com.example.physioconsult.R
 import com.example.physioconsult.login.LogIn.LoginActivity
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 /**
@@ -132,20 +133,43 @@ fun RegisterForm() {
 fun checkCredentials(credentials: RegisterCredentials, context: Context) {
     if (credentials.isNotEmpty() && credentials.password == credentials.repeatPassword) {
         val auth = FirebaseAuth.getInstance()
+        val firestore = FirebaseFirestore.getInstance()
+
         auth.createUserWithEmailAndPassword(credentials.email, credentials.password)
             .addOnCompleteListener(context as Activity) { task ->
                 if (task.isSuccessful) {
-                    context.startActivity(Intent(context, MainActivity::class.java))
-                    Toast.makeText(context, "Register Successfully", Toast.LENGTH_SHORT).show()
-                    context.finish()
+                    val userId = auth.currentUser?.uid
+
+                    if (userId != null) {
+                        val user = hashMapOf(
+                            "name" to credentials.name,
+                            "surname" to credentials.surname,
+                            "email" to credentials.email,
+                            "role" to "patient"
+                        )
+
+                        firestore.collection("users").document(userId).set(user)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "User registered successfully!", Toast.LENGTH_SHORT).show()
+
+                                context.startActivity(Intent(context, MainActivity::class.java))
+                                context.finish()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(context, "Failed to save user: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        Toast.makeText(context, "User ID is null. Registration failed.", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     Toast.makeText(context, "Registration Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     } else {
-        Toast.makeText(context, "Wrong credentials", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Passwords do not match or fields are empty.", Toast.LENGTH_SHORT).show()
     }
 }
+
 
 /**
  * Preview function to display a preview of the RegisterForm composable.
