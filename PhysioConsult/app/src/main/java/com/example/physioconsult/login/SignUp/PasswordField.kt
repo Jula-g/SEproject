@@ -62,7 +62,7 @@ fun PasswordField(
                 color = Color.Black,
                 shape = RoundedCornerShape(30.dp)
             )
-            .height(50.dp),
+            .height(60.dp),
         leadingIcon = leadingIcon,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(
@@ -122,7 +122,7 @@ fun RepeatPasswordField(
                 color = Color.Black,
                 shape = RoundedCornerShape(30.dp)
             )
-            .height(50.dp),
+            .height(60.dp),
         leadingIcon = leadingIcon,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
