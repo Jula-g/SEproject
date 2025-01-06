@@ -1,5 +1,6 @@
-package com.example.physioconsult.Main
+package com.example.physioconsult.physiotherapist
 
+import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,30 +13,30 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+
 
 @Composable
-fun CardButtonAppointments(
+fun CardButton(
     text: String,
     title: String,
     description: String,
-    icon: Painter,
-    backgroundColor: Color
-
+    icon: ImageVector,
+    backgroundColor: Color,
+    iconTint: Color = Color.White
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         val colors = MaterialTheme.colorScheme
-
         Text(
             text = text,
             fontSize = 24.sp,
@@ -43,11 +44,10 @@ fun CardButtonAppointments(
             textAlign = TextAlign.Start,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .fillMaxWidth() // Makes the text span full width
-                .padding(start = 8.dp, bottom = 8.dp) // Adds some padding to the text
+                .fillMaxWidth()
+                .padding(start = 8.dp, bottom = 8.dp)
         )
 
-        // The Card below the text with shadow
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,20 +55,22 @@ fun CardButtonAppointments(
             colors = CardDefaults.cardColors(containerColor = backgroundColor),
             shape = RoundedCornerShape(28.dp),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = 6.dp // Shadow size
+                defaultElevation = 6.dp
             )
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(16.dp)
             ) {
-                Image(
-                    painter = icon,
+                Icon(
+                    imageVector = icon,
                     contentDescription = null,
                     modifier = Modifier
                         .size(85.dp)
-                        .padding(bottom = 5.dp)
+                        .padding(bottom = 5.dp),
+                    tint = iconTint
                 )
+
 
                 Spacer(modifier = Modifier.width(16.dp))
 

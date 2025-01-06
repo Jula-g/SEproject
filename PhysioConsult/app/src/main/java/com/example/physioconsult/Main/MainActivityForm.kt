@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Preview
 @Composable
 fun MainActivityForm() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
