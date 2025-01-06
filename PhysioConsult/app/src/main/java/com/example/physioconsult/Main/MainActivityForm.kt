@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.physioconsult.R
 import com.example.physioconsult.SideNavMenu.SideNavigationMenu
+import com.example.physioconsult.fetchUserData
 import com.example.physioconsult.fragments.user.add.Add
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -87,19 +89,12 @@ fun Content(modifier: Modifier = Modifier) {
     val name = remember { mutableStateOf("Name") }
     val surname = remember { mutableStateOf("Surname") }
 
-    if (userId != null) {
-        val firestore = FirebaseFirestore.getInstance()
-        firestore.collection("users").document(userId)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    name.value = document.getString("name") ?: "User"
-                    surname.value = document.getString("surname") ?: "Surname"
-                }
-            }
-            .addOnFailureListener {
-                Log.e("MainActivityForm", "Failed to get user data", it)
-            }
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            val userData = fetchUserData(userId)
+            name.value = userData["name"] ?: "Name"
+            surname.value = userData["surname"] ?: "Surname"
+        }
     }
 
     Column(
