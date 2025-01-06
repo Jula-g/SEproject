@@ -71,10 +71,10 @@ fun AddPhoto(onTakePhotoClick: () -> Unit, onChooseFromGalleryClick: () -> Unit,
                         Text("Retrieve Photo")
                     }
 
-                    // "Choose from Gallery" button
-                    FilledTonalButton(onClick = { onChooseFromGalleryClick() }, modifier = Modifier.weight(1f)) {
-                        Text("Choose from Gallery")
-                    }
+//                     "Choose from Gallery" button
+//                    FilledTonalButton(onClick = { onChooseFromGalleryClick() }, modifier = Modifier.weight(1f)) {
+//                        Text("Choose from Gallery")
+//                    }
                 }
 
                 Divider(
@@ -86,12 +86,13 @@ fun AddPhoto(onTakePhotoClick: () -> Unit, onChooseFromGalleryClick: () -> Unit,
                 )
 
                 val messages = listOf(
-                    "1. Take off your shoes",
-                    "2. Stand on a flat and hard surface",
-                    "3. Dont have anything in your pockets ",
-                    "4. Dont have arm/ leg jewellery such as watches",
-                    "5. Tie up longer hair ",
-                    "6. Wear tight clothing eg sports bra and shorts"
+                        ""
+//                    "1. Take off your shoes",
+//                    "2. Stand on a flat and hard surface",
+//                    "3. Dont have anything in your pockets ",
+//                    "4. Dont have arm/ leg jewellery such as watches",
+//                    "5. Tie up longer hair ",
+//                    "6. Wear tight clothing eg sports bra and shorts"
                 )
 
                 val textFieldStates = remember { messages.map { mutableStateOf(TextFieldValue(it)) } }
@@ -107,10 +108,10 @@ fun AddPhoto(onTakePhotoClick: () -> Unit, onChooseFromGalleryClick: () -> Unit,
                             .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Checkbox(
-                            checked = checkboxStates[index].value,
-                            onCheckedChange = { checkboxStates[index].value = it }
-                        )
+//                        Checkbox(
+//                            checked = checkboxStates[index].value,
+//                            onCheckedChange = { checkboxStates[index].value = it }
+//                        )
 
                         // Text field
                         BasicTextField(

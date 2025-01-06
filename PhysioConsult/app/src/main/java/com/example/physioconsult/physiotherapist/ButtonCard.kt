@@ -2,6 +2,7 @@ package com.example.physioconsult.physiotherapist
 
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,7 +34,8 @@ fun CardButton(
     description: String,
     icon: ImageVector,
     backgroundColor: Color,
-    iconTint: Color = Color.White
+    iconTint: Color = Color.White,
+    onClick: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         val colors = MaterialTheme.colorScheme
@@ -46,12 +48,14 @@ fun CardButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 8.dp, bottom = 8.dp)
+
         )
 
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp),
+                .height(120.dp)
+                .clickable { onClick() },
             colors = CardDefaults.cardColors(containerColor = backgroundColor),
             shape = RoundedCornerShape(28.dp),
             elevation = CardDefaults.cardElevation(
