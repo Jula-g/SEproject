@@ -1,5 +1,7 @@
-package com.example.physioconsult.SideNavMenu
+package com.example.physioconsult.physiotherapist
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PeopleOutline
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,15 +33,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.physioconsult.Main.MainActivity
+import com.example.physioconsult.Main.navigateViewPhoto
 import com.example.physioconsult.fetchUserData
+import com.example.physioconsult.fragments.therapist.ViewImage
 import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
-fun SideNavigationMenu() {
+fun SideNavPhysiotherapist() {
+    val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
     val userId = auth.currentUser?.uid
     val name = remember { mutableStateOf("Name") }
@@ -58,7 +67,6 @@ fun SideNavigationMenu() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        // Header Section
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,35 +93,27 @@ fun SideNavigationMenu() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Menu Items
         MenuItem(
             icon = Icons.Default.Home,
             label = "Home",
-            onClick = {  }
+            onClick = {
+                context.startActivity(Intent(context, MainActivity::class.java))
+            }
         )
+
         MenuItem(
-            icon = Icons.Default.Schedule,
-            label = "Schedule",
-            onClick = { /* Add schedule navigation */ }
-        )
-        MenuItem(
-            icon = Icons.Default.Add,
-            label = "Add",
-            onClick = { /* Add action */ }
-        )
-        MenuItem(
-            icon = Icons.Default.History,
-            label = "History",
+            icon = Icons.Default.PeopleOutline,
+            label = "Patients",
             onClick = { /* History action */ }
         )
         MenuItem(
-            icon = Icons.Default.History,
+            icon = Icons.Default.Settings,
             label = "Settings",
             onClick = { }
         )
 
         Spacer(modifier = Modifier.weight(1f))
-    }
+       }
 }
 
 @Composable
