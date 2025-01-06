@@ -81,7 +81,7 @@ fun PasswordField(
                 color = Color.Black,
                 shape = RoundedCornerShape(30.dp)
             )
-            .height(50.dp),
+            .height(60.dp),
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
