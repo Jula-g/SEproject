@@ -105,7 +105,7 @@ class ViewImage : ComponentActivity() {
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    val base64String = documentSnapshot.getString("text") // Assuming your Base64 string is stored in the "text" field
+                    val base64String = documentSnapshot.getString("text")
 
                     // Convert Base64 string to Bitmap
                     if (base64String != null) {
@@ -141,6 +141,6 @@ class ViewImage : ComponentActivity() {
     }
 
     private fun uploadImageToFirebase(string: String) {
-        // Upload to Firestore (or any other service)
+
     }
 }

@@ -288,7 +288,7 @@ class Add : ComponentActivity() {
         val images = arrayOf(frontImage, backImage, sideImage)
 
 
-        // Set the text data to Firestore
+        // Set the text data to the fields in one document
         val data = mutableMapOf<String, String>()
         for (i in field.indices) {
             data[field[i]] = images[i] // Assign the field to its corresponding image
