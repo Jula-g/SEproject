@@ -24,8 +24,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
+/**
+ * Composable function that displays a card button for assessments.
+ *
+ * @param text The text to display inside the card.
+ * @param title The title to display inside the card.
+ * @param description The description to display inside the card.
+ * @param icon The icon to display inside the card.
+ * @param backgroundColor The background color of the card.
+ */
+
 @Composable
-fun CardButtonAppointments(
+fun CardButtonAssessments(
     text: String,
     title: String,
     description: String,
@@ -43,11 +54,10 @@ fun CardButtonAppointments(
             textAlign = TextAlign.Start,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .fillMaxWidth() // Makes the text span full width
-                .padding(start = 8.dp, bottom = 8.dp) // Adds some padding to the text
+                .fillMaxWidth()
+                .padding(start = 8.dp, bottom = 8.dp)
         )
 
-        // The Card below the text with shadow
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,7 +65,7 @@ fun CardButtonAppointments(
             colors = CardDefaults.cardColors(containerColor = backgroundColor),
             shape = RoundedCornerShape(28.dp),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = 6.dp // Shadow size
+                defaultElevation = 6.dp
             )
         ) {
             Row(

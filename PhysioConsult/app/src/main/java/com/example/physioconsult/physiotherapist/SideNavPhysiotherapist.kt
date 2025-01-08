@@ -1,6 +1,5 @@
 package com.example.physioconsult.physiotherapist
 
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,12 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PeopleOutline
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -38,12 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.physioconsult.Main.MainActivity
-import com.example.physioconsult.Main.navigateViewPhoto
-import com.example.physioconsult.fetchUserData
-import com.example.physioconsult.fragments.therapist.ViewImage
+import com.example.physioconsult.user.fetchUserData
 import com.google.firebase.auth.FirebaseAuth
 
-
+/**
+ * Composable function that displays the side navigation menu for the physiotherapist.
+ * It includes user information and navigation items.
+ */
 @Composable
 fun SideNavPhysiotherapist() {
     val context = LocalContext.current
@@ -115,6 +112,14 @@ fun SideNavPhysiotherapist() {
         Spacer(modifier = Modifier.weight(1f))
        }
 }
+
+/**
+ * Composable function that represents a menu item in the side navigation menu.
+ *
+ * @param icon The icon to display for the menu item.
+ * @param label The label to display for the menu item.
+ * @param onClick The action to perform when the menu item is clicked.
+ */
 
 @Composable
 fun MenuItem(
