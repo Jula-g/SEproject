@@ -42,12 +42,6 @@ fun BottomNavPhysiotherapist() {
                 onClick = { /* home */ }
             )
             NavigationBarItem(
-                icon = { NavigationBarIcon(Icons.Default.Schedule, "Appointments") },
-                label = { Text("Appointments") },
-                selected = false,
-                onClick = { /* schedule */ }
-            )
-            NavigationBarItem(
                 icon = { NavigationBarIcon(Icons.Default.ContentPaste, "Assessments") },
                 label = { Text("Assessments") },
                 selected = false,

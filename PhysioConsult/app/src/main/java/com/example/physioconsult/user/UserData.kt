@@ -1,4 +1,4 @@
-package com.example.physioconsult
+package com.example.physioconsult.user
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore

@@ -34,7 +34,7 @@ fun BottomNavigationBar() {
         color = Color(0xFF84ACD8)
     ) {
         NavigationBar(
-            containerColor = Color.Transparent, // Set to transparent to inherit Surface color
+            containerColor = Color.Transparent,
             modifier = Modifier.fillMaxWidth()
         ) {
             NavigationBarItem(
