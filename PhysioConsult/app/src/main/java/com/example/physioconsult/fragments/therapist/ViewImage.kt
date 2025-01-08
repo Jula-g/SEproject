@@ -30,21 +30,18 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import android.util.Base64
+import com.example.physioconsult.fragments.ImageUtils
 
 import java.util.Date
 import java.util.Locale
 
 class ViewImage : ComponentActivity() {
     private var iteration: Int = 1
-    private lateinit var cameraResultLauncher: ActivityResultLauncher<Intent>
-    private lateinit var galleryResultLauncher: ActivityResultLauncher<Intent>
-
-    private val db = Firebase.firestore
     private var field = ""
-
     private var pictureUri = mutableStateOf<Uri?>(null)
     private val imageUri = mutableStateOf<Uri?>(null)
-    private val tempUri = mutableStateOf<Uri?>(null)
+
+    private val imageManager = ImageUtils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +76,7 @@ class ViewImage : ComponentActivity() {
             PhysioConsultTheme {
                 AddPhoto(
                     onTakePhotoClick = {
-                        retrieveImageFromFirestore()
+                        imageManager.retrieveImageFromFirestore(this, imageUri)
                     },
                     onChooseFromGalleryClick = {
                         // Code for selecting from gallery (if needed)
@@ -96,51 +93,51 @@ class ViewImage : ComponentActivity() {
         }
     }
 
-    // Retrieve image from Firestore (Base64)
-    private fun retrieveImageFromFirestore() {
-        val db = FirebaseFirestore.getInstance()
-        val docRef = db.collection("sampleTexts").document("jgcu660xn44LPH1xDTi4")
-
-
-        docRef.get()
-            .addOnSuccessListener { documentSnapshot ->
-                if (documentSnapshot.exists()) {
-                    val base64String = documentSnapshot.getString("text")
-
-                    // Convert Base64 string to Bitmap
-                    if (base64String != null) {
-                        val bitmap = convertBase64ToBitmap(base64String)
-                        if (bitmap != null) {
-                            imageUri.value = getImageUriFromBitmap(bitmap) // Display the decoded Bitmap
-                        }
-                    }
-                } else {
-                    Log.e("Firestore", "Document does not exist")
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "Error retrieving document", e)
-            }
-    }
-
-    private fun convertBase64ToBitmap(base64String: String): Bitmap? {
-        return try {
-            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-        } catch (e: Exception) {
-            Log.e("Base64ToBitmap", "Error decoding Base64 string", e)
-            null
-        }
-    }
-
-    private fun getImageUriFromBitmap(bitmap: Bitmap): Uri {
-        val bytes = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "Image", null)
-        return Uri.parse(path)
-    }
-
-    private fun uploadImageToFirebase(string: String) {
-
-    }
+//    // Retrieve image from Firestore (Base64)
+//    private fun retrieveImageFromFirestore() {
+//        val db = FirebaseFirestore.getInstance()
+//        val docRef = db.collection("sampleTexts").document("jgcu660xn44LPH1xDTi4")
+//
+//
+//        docRef.get()
+//            .addOnSuccessListener { documentSnapshot ->
+//                if (documentSnapshot.exists()) {
+//                    val base64String = documentSnapshot.getString("text")
+//
+//                    // Convert Base64 string to Bitmap
+//                    if (base64String != null) {
+//                        val bitmap = convertBase64ToBitmap(base64String)
+//                        if (bitmap != null) {
+//                            imageUri.value = getImageUriFromBitmap(bitmap) // Display the decoded Bitmap
+//                        }
+//                    }
+//                } else {
+//                    Log.e("Firestore", "Document does not exist")
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e("Firestore", "Error retrieving document", e)
+//            }
+//    }
+//
+//    private fun convertBase64ToBitmap(base64String: String): Bitmap? {
+//        return try {
+//            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
+//            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+//        } catch (e: Exception) {
+//            Log.e("Base64ToBitmap", "Error decoding Base64 string", e)
+//            null
+//        }
+//    }
+//
+//    private fun getImageUriFromBitmap(bitmap: Bitmap): Uri {
+//        val bytes = ByteArrayOutputStream()
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+//        val path = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "Image", null)
+//        return Uri.parse(path)
+//    }
+//
+//    private fun uploadImageToFirebase(string: String) {
+//
+//    }
 }
