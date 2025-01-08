@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.physioconsult.getUserRole
+import com.example.physioconsult.user.getUserRole
 import com.example.physioconsult.physiotherapist.PhysiotherapistForm
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -31,13 +31,8 @@ class MainActivity : ComponentActivity() {
                     when (userRole.value) {
                         "patient" -> MainActivityForm()
                         "physiotherapist" -> PhysiotherapistForm()
-                        else -> {
-                            // Handle case where user has no role
-                        }
+                        else -> MainActivityForm()
                     }
-                } else {
-                    // Handle case where user is not logged in
-                    // Optionally navigate to a login screen
                 }
             }
         }

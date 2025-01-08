@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.physioconsult.fetchUserData
+import com.example.physioconsult.user.fetchUserData
 import com.google.firebase.auth.FirebaseAuth
 
 
