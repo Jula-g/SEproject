@@ -13,29 +13,28 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.physioconsult.Main.CardButtonAppointments
-import com.example.physioconsult.Main.navigatePhoto
 import com.example.physioconsult.Main.navigateViewPhoto
-import com.example.physioconsult.R
-import com.example.physioconsult.SideNavMenu.SideNavigationMenu
-import com.example.physioconsult.fetchUserData
+import com.example.physioconsult.user.fetchUserData
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+
+/**
+ * Composable function that displays the form for the physiotherapist.
+ * It includes a top app bar, a bottom navigation bar, and a scrollable content area
+ * with user information and action buttons.
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -144,18 +143,6 @@ fun PhysiotherapistForm() {
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-
-                val imageChart: Painter =
-                    painterResource(id = R.drawable.medical)
-                CardButtonAppointments(
-                    text = "View Appointments",
-                    title = "Appointments",
-                    description = "View all your appointments",
-                    icon = imageChart,
-                    backgroundColor = Color(0xFF84ACD8)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 CardButton(
                     text = "Retrieve Assessments",

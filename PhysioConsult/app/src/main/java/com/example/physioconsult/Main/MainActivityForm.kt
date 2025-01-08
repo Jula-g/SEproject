@@ -2,7 +2,6 @@ package com.example.physioconsult.Main
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,14 +27,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.physioconsult.R
 import com.example.physioconsult.SideNavMenu.SideNavigationMenu
-import com.example.physioconsult.fetchUserData
+import com.example.physioconsult.user.fetchUserData
 import com.example.physioconsult.fragments.user.add.Add
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-
 import kotlinx.coroutines.launch
 
+/**
+ * Main activity form composable function.
+ * Displays the main UI for the activity, including a top app bar, bottom navigation bar, and content.
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -79,7 +80,12 @@ fun MainActivityForm() {
     }
 }
 
-
+/**
+ * Content composable function.
+ * Displays the main content of the activity, including user information and action buttons.
+ *
+ * @param modifier Modifier to be applied to the content layout.
+ */
 @Composable
 fun Content(modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -179,7 +185,7 @@ fun Content(modifier: Modifier = Modifier) {
 
         val imageChart: Painter =
             painterResource(id = R.drawable.medical)
-        CardButtonAppointments(
+        CardButtonAssessments(
             text = "Last Assessment",
             title = "Appointments",
             description = "View your upcoming consultations.",
@@ -197,6 +203,11 @@ fun LogInFormPreviewDark() {
     }
 }
 
+/**
+ * Navigates to the photo activity.
+ *
+ * @param context The context from which the navigation is initiated.
+ */
 fun navigatePhoto(context: Context) {
     context.startActivity(Intent(context, Add::class.java))
 }

@@ -41,7 +41,6 @@ import com.example.physioconsult.R
 import com.example.physioconsult.login.SignUp.RegisterActivity
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
-import org.bson.Document
 
 /**
  * Composable function that displays the login form.
@@ -155,15 +154,6 @@ fun checkCredentials(credentials: Credentials, context: Context) {
     }
 }
 
-fun insertSampleData() {
-    val collection = MongoSetup.getInstance().database.getCollection("Images")
-
-    val doc = Document("name", "John Doe").append("age", 25)
-    collection.insertOne(doc)
-
-    println("Document inserted!")
-}
-
 
 /**
  * Preview of the LogInForm composable function with light theme.
@@ -189,4 +179,3 @@ fun LogInFormPreviewDark() {
     }
 }
 
-//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
