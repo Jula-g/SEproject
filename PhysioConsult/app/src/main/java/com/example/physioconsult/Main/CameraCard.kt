@@ -24,6 +24,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
+/**
+ * Composable function that represents a card button with an icon, title, and description.
+ *
+ * @param text The text to display at the top of the card.
+ * @param title The title to display inside the card.
+ * @param description The description to display inside the card.
+ * @param icon The icon to display inside the card.
+ * @param backgroundColor The background color of the card.
+ * @param onClick The action to perform when the card is clicked.
+ */
 @Composable
 fun CardButtonCamera(
     text: String,

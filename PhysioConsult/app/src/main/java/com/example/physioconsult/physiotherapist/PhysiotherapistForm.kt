@@ -30,6 +30,12 @@ import com.example.physioconsult.user.fetchUserData
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
+/**
+ * Composable function that displays the form for the physiotherapist.
+ * It includes a top app bar, a bottom navigation bar, and a scrollable content area
+ * with user information and action buttons.
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable

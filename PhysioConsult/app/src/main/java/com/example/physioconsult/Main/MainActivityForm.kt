@@ -31,9 +31,12 @@ import com.example.physioconsult.user.fetchUserData
 import com.example.physioconsult.fragments.user.add.Add
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
-
 import kotlinx.coroutines.launch
 
+/**
+ * Main activity form composable function.
+ * Displays the main UI for the activity, including a top app bar, bottom navigation bar, and content.
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -77,7 +80,12 @@ fun MainActivityForm() {
     }
 }
 
-
+/**
+ * Content composable function.
+ * Displays the main content of the activity, including user information and action buttons.
+ *
+ * @param modifier Modifier to be applied to the content layout.
+ */
 @Composable
 fun Content(modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -195,6 +203,11 @@ fun LogInFormPreviewDark() {
     }
 }
 
+/**
+ * Navigates to the photo activity.
+ *
+ * @param context The context from which the navigation is initiated.
+ */
 fun navigatePhoto(context: Context) {
     context.startActivity(Intent(context, Add::class.java))
 }

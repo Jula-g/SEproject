@@ -11,7 +11,16 @@ import com.example.physioconsult.physiotherapist.PhysiotherapistForm
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * The main activity of the application.
+ */
 class MainActivity : ComponentActivity() {
+    /**
+     * Called when the activity is starting. This is where most initialization should go.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle). Otherwise it is null.
+     */
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val auth = FirebaseAuth.getInstance()
@@ -23,9 +32,7 @@ class MainActivity : ComponentActivity() {
                     val userRole = remember { mutableStateOf<String?>(null) }
 
                     LaunchedEffect(Unit) {
-                        getUserRole(userId) { role ->
-                            userRole.value = role
-                        }
+                        userRole.value = getUserRole(userId)
                     }
 
                     when (userRole.value) {
