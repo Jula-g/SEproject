@@ -4,6 +4,13 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Fetches user data from Firestore for a given user ID.
+ *
+ * @param userId The ID of the user whose data is to be fetched.
+ * @return A map containing the user's name and surname.
+ */
+
 suspend fun fetchUserData(userId: String): Map<String, String> {
     return try {
         val firestore = FirebaseFirestore.getInstance()
@@ -16,4 +23,24 @@ suspend fun fetchUserData(userId: String): Map<String, String> {
         Log.e("fetchUserData", "Error fetching user data", e)
         emptyMap()
     }
+}
+/**
+ * Fetches the role of a user from Firestore for a given user ID.
+ *
+ * @param userId The ID of the user whose role is to be fetched.
+ * @return The role of the user as a String, or null if the role is not found or an error occurs.
+ */
+
+suspend fun getUserRole(userId: String): String? {
+    val firestore = FirebaseFirestore.getInstance()
+    return try {
+        val document = firestore.collection("users").document(userId).get().await()
+        if (document.exists()) {
+            document.getString("role")
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        Log.e("getUserData", "Error fetching user role", e)
+    }.toString()
 }

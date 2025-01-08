@@ -22,8 +22,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.physioconsult.fragments.therapist.ViewImage
-import com.example.physioconsult.fragments.user.add.Add
 
+/**
+ * Composable function that displays the bottom navigation bar.
+ * It includes navigation items for Home, Schedule, Add, and History.
+ *
+ * The navigation bar has a rounded top shape and a custom background color.
+ * Each navigation item has an icon and a label.
+ *
+ * @param context The context used to start activities.
+ */
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)

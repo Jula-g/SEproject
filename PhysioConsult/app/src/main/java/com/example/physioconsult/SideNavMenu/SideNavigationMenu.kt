@@ -36,6 +36,11 @@ import com.example.physioconsult.user.fetchUserData
 import com.google.firebase.auth.FirebaseAuth
 
 
+/**
+ * SideNavigationMenu composable function.
+ * Displays a side navigation menu with user information and menu items.
+ */
+
 @Composable
 fun SideNavigationMenu() {
     val auth = FirebaseAuth.getInstance()
@@ -58,7 +63,6 @@ fun SideNavigationMenu() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        // Header Section
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,7 +89,6 @@ fun SideNavigationMenu() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Menu Items
         MenuItem(
             icon = Icons.Default.Home,
             label = "Home",
@@ -115,6 +118,15 @@ fun SideNavigationMenu() {
         Spacer(modifier = Modifier.weight(1f))
     }
 }
+
+/**
+ * MenuItem composable function.
+ * Displays a menu item with an icon and label.
+ *
+ * @param icon The icon to display.
+ * @param label The label to display.
+ * @param onClick The action to perform when the item is clicked.
+ */
 
 @Composable
 fun MenuItem(

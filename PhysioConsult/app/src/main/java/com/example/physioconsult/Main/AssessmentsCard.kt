@@ -24,6 +24,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
+/**
+ * Composable function that displays a card button for assessments.
+ *
+ * @param text The text to display inside the card.
+ * @param title The title to display inside the card.
+ * @param description The description to display inside the card.
+ * @param icon The icon to display inside the card.
+ * @param backgroundColor The background color of the card.
+ */
+
 @Composable
 fun CardButtonAssessments(
     text: String,

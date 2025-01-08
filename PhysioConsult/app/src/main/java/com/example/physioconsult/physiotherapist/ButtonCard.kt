@@ -26,6 +26,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
+/**
+ * Composable function that represents a card button with an icon, title, and description.
+ *
+ * @param text The text to display at the top of the card.
+ * @param title The title to display inside the card.
+ * @param description The description to display inside the card.
+ * @param icon The icon to display inside the card.
+ * @param backgroundColor The background color of the card.
+ * @param iconTint The tint color of the icon. Default is white.
+ * @param onClick The action to perform when the card is clicked.
+ */
 
 @Composable
 fun CardButton(
