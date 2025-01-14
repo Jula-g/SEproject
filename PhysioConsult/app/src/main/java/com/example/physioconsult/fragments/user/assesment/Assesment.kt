@@ -1,60 +1,209 @@
 package com.example.physioconsult.fragments.user.assesment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.example.physioconsult.R
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.mutableStateOf
+import com.example.physioconsult.Main.MainActivity
+import com.example.physioconsult.ui.theme.PhysioConsultTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.mlkit.vision.pose.Pose
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class Assesment : ComponentActivity() {
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid
+    private val measure = Measure()
 
-/**
- * A simple [Fragment] subclass.
- * Use the [Assesment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class Assesment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var i = mutableStateOf(0)
+    private var uriList = mutableListOf<Uri?>()
+    private var angResult = mutableMapOf<String, String>()
+    private var lenResult = mutableMapOf<String, String>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private lateinit var frontResult: Map<String, Double?>
+    private lateinit var backResult: Map<String, Double?>
+    private lateinit var sideResult: Map<String, Double?>
+
+        override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        val documentId = intent.getStringExtra("documentId")
+        val frontImage = intent.getStringExtra("frontImage")
+        val backImage = intent.getStringExtra("backImage")
+        val sideImage = intent.getStringExtra("sideImage")
+
+        val frontUri = Uri.parse(frontImage)
+        val backUri = Uri.parse(backImage)
+        val sideUri = Uri.parse(sideImage)
+
+        Log.d("AssesmentActivity", "front: ${frontUri}\nback: ${backUri}\nside: ${sideUri}")
+
+        uriList.addAll(listOf(frontUri, backUri, sideUri))
+        Log.d("AssesmentActivity", "urilist: ${uriList}")
+
+        val poses = mutableListOf<Pose>()
+        measure.detectAndSavePoses(uriList, this) { detectedPoses ->
+            poses.clear()
+            poses.addAll(detectedPoses)
+
+            val results = measure.conductMeasurements(poses)
+            frontResult = results.first
+            backResult = results.second
+            sideResult = results.third
+            update(frontResult, backResult, sideResult, i.value)
+            if (documentId != null && userId != null) {
+                saveResultsToFirebase(documentId, userId, frontResult, backResult, sideResult,
+                    onSuccess = {
+                        Log.d("Firestore", "Results successfully saved.")
+                    },
+                    onFailure = { exception ->
+                        Log.e("Firestore", "Failed to save results: ${exception.message}")
+                    }
+                )
+            }
+
+
+            setContent {
+                PhysioConsultTheme {
+                    AssesmentForm(
+                        onNextClick = {
+                            if (i.value < uriList.size - 1) {
+                                i.value++
+                                update(frontResult, backResult, sideResult, i.value)
+                            }
+                        },
+                        onPreviousClick = {
+                            if (i.value > 0) {
+                                i.value--
+                                update(frontResult, backResult, sideResult, i.value)
+                            }
+                        },
+                        onCloseClick = {
+                            this.startActivity(
+                                Intent(
+                                    this,
+                                    MainActivity::class.java
+                                )
+                            )
+                        },
+                        onSavePDFClick = { /* TODO: create save to PDF method that will assemble and save a PDF version of the active assesment */ },
+                        onGenerateCode = {/* TODO: implement generate access code functionality*/ },
+                        uriList = uriList,
+                        angleResults = angResult,
+                        lengthResults = lenResult,
+                        index = i.value
+                    )
+                }
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_assesment2, container, false)
+    private fun update(frontResults: Map<String, Double?>, backResults: Map<String, Double?>, sideResults: Map<String, Double?>, index: Int) {
+        when (index) {
+            0 -> { // Front View
+                val keys = listOf(
+                    "Hips",
+                    "Shoulders",
+                    "Thigh L",
+                    "Thigh R",
+                    "Shin L",
+                    "Shin R",
+                    "Forearm L",
+                    "Forearm R",
+                    "Arm L",
+                    "Arm R"
+                )
+
+                val resultsMap = keys.zip(frontResults.values).toMap()
+
+                angResult = mutableMapOf(
+                    "Hips" to formatToTwoDecimalPlaces(resultsMap["Hips"]),
+                    "Shoulders" to formatToTwoDecimalPlaces(resultsMap["Shoulders"])
+                )
+
+                lenResult = keys.drop(2).associateWith { key ->
+                    formatToTwoDecimalPlaces(resultsMap[key])
+                } as MutableMap<String, String>
+            }
+
+            1 -> { // Back View
+                val keys = listOf(
+                    "Hips",
+                    "Shoulders",
+                    "Thigh L",
+                    "Thigh R",
+                    "Shin L",
+                    "Shin R",
+                    "Forearm L",
+                    "Forearm R",
+                    "Arm L",
+                    "Arm R"
+                )
+
+                val resultsMap = keys.zip(backResults.values).toMap()
+
+                angResult = mutableMapOf(
+                    "Hips" to formatToTwoDecimalPlaces(resultsMap["Hips"]),
+                    "Shoulders" to formatToTwoDecimalPlaces(resultsMap["Shoulders"])
+                )
+
+                lenResult = keys.drop(2).associateWith { key ->
+                    formatToTwoDecimalPlaces(resultsMap[key])
+                } as MutableMap<String, String>
+            }
+
+            2 -> { // Side View
+                val keys = listOf(
+                    "Thigh L",
+                    "Shin L",
+                    "Forearm L",
+                    "Arm L"
+                )
+
+                val resultsMap = keys.zip(sideResults.values).toMap()
+
+                // Side view has no angles
+                angResult = mutableMapOf(
+                    "Hips" to "---",
+                    "Shoulders" to "---"
+                )
+
+                lenResult = keys.associateWith { key ->
+                    formatToTwoDecimalPlaces(resultsMap[key])
+                } as MutableMap<String, String>
+            }
+
+            else -> {
+                Log.w("AssessmentActivity", "Invalid index provided: $index")
+            }
+        }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Assesment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Assesment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun formatToTwoDecimalPlaces(value: Double?): String {
+        return value?.let { String.format("%.2f", it) } ?: "err"
+    }
+
+    private fun saveResultsToFirebase(
+        documentId: String,
+        userId: String,
+        frontResults: Map<String, Double?>,
+        backResults: Map<String, Double?>,
+        sideResults: Map<String, Double?>,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection(userId).document(documentId)
+
+        val data = mapOf(
+            "front" to frontResults,
+            "back" to backResults,
+            "side" to sideResults
+        )
+
+        docRef.update(data)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e -> onFailure(e) }
     }
 }

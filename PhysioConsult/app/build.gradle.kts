@@ -62,6 +62,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    
+    implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta5")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -75,14 +77,15 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
 
+
     implementation ("androidx.navigation:navigation-compose:2.7.1")
     implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
     implementation (libs.mongodb.driver.sync)
     implementation (libs.mongodb.driver.kotlin.coroutine) // Check for the latest version
     implementation("org.litote.kmongo:kmongo:5.1.0")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
     implementation("androidx.compose.material:material-icons-extended:1.4.3")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("io.coil-kt:coil-compose:2.4.0")

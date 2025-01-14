@@ -31,11 +31,18 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import android.util.Base64
 import com.example.physioconsult.fragments.ImageUtils
+import com.google.firebase.auth.FirebaseAuth
 
 import java.util.Date
 import java.util.Locale
 
 class ViewImage : ComponentActivity() {
+    // TODO: test values, to be changed
+    private val documentId = "test value" // change
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid // TODO: userId cannot be that of current user, it must be the user id of the patient
+    private val imageFields = listOf("Front", "Back", "Side") // keep
+
+
     private var iteration: Int = 1
     private var field = ""
     private var pictureUri = mutableStateOf<Uri?>(null)
@@ -74,9 +81,18 @@ class ViewImage : ComponentActivity() {
 
         setContent {
             PhysioConsultTheme {
+                // TODO: physiotherapist cannot have this AddPhoto view. Make a new view.
                 AddPhoto(
                     onTakePhotoClick = {
-                        imageManager.retrieveImageFromFirestore(this, imageUri)
+                        if (documentId != null && userId != null) {
+                            imageManager.retrieveImageFromFirestore(
+                                this,
+                                documentId,
+                                userId,
+                                imageFields
+                            ) { uris ->
+                            }
+                        }
                     },
                     onChooseFromGalleryClick = {
                         // Code for selecting from gallery (if needed)
