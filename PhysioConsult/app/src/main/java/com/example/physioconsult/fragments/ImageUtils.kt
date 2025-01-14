@@ -11,7 +11,9 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.ByteArrayOutputStream
 
@@ -38,7 +40,7 @@ class ImageUtils{
         return null
     }
 
-    fun uploadImageToFirebase(context: Context, imageDate: String, frontImage: String, backImage: String, sideImage: String) {
+    fun uploadImageToFirebase(context: Context, imageDate: String, frontImage: String, backImage: String, sideImage: String, onDocumentIdRetrieved: (String) -> Unit) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val uid = currentUser?.uid
 
@@ -63,9 +65,11 @@ class ImageUtils{
         if (textDataRef != null) {
             textDataRef.set(data)
                 .addOnSuccessListener {
+                    val documentId = textDataRef.id
                     Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT).show()
 //                    navigateMain(this)
 
+                    onDocumentIdRetrieved(documentId)
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(context, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -98,33 +102,66 @@ class ImageUtils{
     }
 
 
-
-    // Retrieve image from Firestore (Base64)
-    fun retrieveImageFromFirestore(context: Context, imageUri: MutableState<Uri?>) {
+    // retrieves all fields from specified document in a collection, returns a list of uri values
+    fun retrieveImageFromFirestore(context: Context, documentId: String, userId: String, imageFields: List<String>, imageUris: (List<Uri?>) -> Unit) {
         val db = FirebaseFirestore.getInstance()
-        val docRef = db.collection("sampleTexts").document("jgcu660xn44LPH1xDTi4")
-
+        val docRef = db.collection(userId).document(documentId)
 
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    val base64String = documentSnapshot.getString("text")
+                    val uris = mutableListOf<Uri?>()
 
-                    // Convert Base64 string to Bitmap
-                    if (base64String != null) {
-                        val bitmap = convertBase64ToBitmap(base64String)
-                        if (bitmap != null) {
-                            imageUri.value = getImageUriFromBitmap(context, bitmap) // Display the decoded Bitmap
+                    for (imageField in imageFields) {
+                        val base64String = documentSnapshot.getString(imageField)
+
+                        // Convert Base64 string to Bitmap
+                        if (base64String != null) {
+                            val bitmap = convertBase64ToBitmap(base64String)
+                            if (bitmap != null) {
+                                val uri = getImageUriFromBitmap(context, bitmap)
+                                uris.add(uri)
+                            }
                         }
                     }
+
+                    imageUris(uris)
                 } else {
                     Log.e("Firestore", "Document does not exist")
+                    imageUris(emptyList())
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error retrieving document", e)
+                imageUris(emptyList())
             }
     }
+
+    // Retrieve image from Firestore (Base64)
+//    fun retrieveImageFromFirestore(context: Context, documentId: String, userId: String, imageField: String, imageUri: MutableState<Uri?>) {
+//        val db = FirebaseFirestore.getInstance()
+//        val docRef = db.collection(userId).document(documentId)
+//
+//        docRef.get()
+//            .addOnSuccessListener { documentSnapshot ->
+//                if (documentSnapshot.exists()) {
+//                    val base64String = documentSnapshot.getString(imageField)
+//
+//                    // Convert Base64 string to Bitmap
+//                    if (base64String != null) {
+//                        val bitmap = convertBase64ToBitmap(base64String)
+//                        if (bitmap != null) {
+//                            imageUri.value = getImageUriFromBitmap(context, bitmap) // Display the decoded Bitmap
+//                        }
+//                    }
+//                } else {
+//                    Log.e("Firestore", "Document does not exist")
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e("Firestore", "Error retrieving document", e)
+//            }
+//    }
 
     fun convertBase64ToBitmap(base64String: String): Bitmap? {
         return try {
@@ -142,5 +179,4 @@ class ImageUtils{
         val path = MediaStore.Images.Media.insertImage(context.contentResolver, bitmap, "Image", null)
         return Uri.parse(path)
     }
-
 }

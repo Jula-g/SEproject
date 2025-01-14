@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -27,6 +28,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import com.example.physioconsult.Main.MainActivity
 import com.example.physioconsult.fragments.ImageUtils
+import com.example.physioconsult.fragments.user.assesment.Assesment
 
 import java.util.Date
 import java.util.Locale
@@ -35,11 +37,10 @@ class Add : ComponentActivity() {
     private var iteration: Int = 1
     private lateinit var cameraResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var galleryResultLauncher: ActivityResultLauncher<Intent>
-    private val currentDate = Date() // Get the current date
+    private val currentDate = Date()
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
     private val imageDate = dateFormat.format(currentDate)
 
-    private val db = Firebase.firestore
     private var field = ""
     private val imageManager = ImageUtils()
 
@@ -50,6 +51,10 @@ class Add : ComponentActivity() {
     private var frontImage =""
     private var backImage =""
     private var sideImage =""
+
+    private var frontImagePath = ""
+    private var backImagePath = ""
+    private var sideImagePath = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +79,7 @@ class Add : ComponentActivity() {
                 if (result.resultCode == Activity.RESULT_OK) {
                     val tempUri = result.data?.data
                     imageUri.value = tempUri
+
                 }
             }
 
@@ -96,7 +102,7 @@ class Add : ComponentActivity() {
                     onChooseFromGalleryClick = {
                         Log.e("OnChooseFromGalleryClick", "detected")
                         // TODO: check user's API level if above 33 -> use READ_EXTERNAL_STORAGE
-                        //  if below -> READ_MEDIA_IMAEGS
+                        //  if below -> READ_MEDIA_IMAGES
                         if (ContextCompat.checkSelfPermission(
                                 this,
                                 Manifest.permission.READ_EXTERNAL_STORAGE
@@ -118,8 +124,14 @@ class Add : ComponentActivity() {
                     },
                     onConfirmClick = {
                         val string = imageManager.convertImageUriToBase64(this, imageUri.value)
-                        imageUri.value = null
 
+                        when (iteration){
+                            1 -> frontImagePath = imageUri.value.toString()
+                            2 -> backImagePath = imageUri.value.toString()
+                            3 -> sideImagePath = imageUri.value.toString()
+                        }
+
+                        imageUri.value = null
                         iteration++
 
                         if (string != null) {
@@ -127,9 +139,16 @@ class Add : ComponentActivity() {
                         }
 
                         if (iteration >= 4){
+                            Log.d("AddActivity", "check again front: ${frontImagePath}\nback: ${backImagePath}\nside: ${sideImagePath}")
                             iteration = 1
-                            imageManager.uploadImageToFirebase(this, imageDate, frontImage, backImage, sideImage)
-                            this.startActivity(Intent(this, MainActivity::class.java))
+                            imageManager.uploadImageToFirebase(this, imageDate, frontImage, backImage, sideImage) { documentId ->
+                                val intent = Intent(this, Assesment::class.java)
+                                intent.putExtra("documentId", documentId)
+                                intent.putExtra("frontImage", frontImagePath)
+                                intent.putExtra("backImage", backImagePath)
+                                intent.putExtra("sideImage", sideImagePath)
+                                startActivity(intent)
+                            }
                         }
                     },
                     imageUri2 = imageUri.value,
@@ -137,7 +156,6 @@ class Add : ComponentActivity() {
                 )
             }
         }
-
     }
 
     fun openCamera() {
@@ -162,7 +180,6 @@ class Add : ComponentActivity() {
 
     }
 
-
     fun chooseFromGallery() {
         Log.e("OnChooseFromGalleryClick", "FUNCTION")
         val intent = Intent()
@@ -171,10 +188,11 @@ class Add : ComponentActivity() {
         galleryResultLauncher.launch(Intent.createChooser(intent, "Select Picture"))
     }
 
-    // Save the captured image to the gallery (can be disabled if we don't want to save the pictures on the phone)
-    private fun saveImageToGallery(uri: Uri) {
+    private fun saveImageToGallery(uri: Uri): String {
         val contentResolver = contentResolver
         val imageStream = contentResolver.openInputStream(uri)
+
+        var savedPath = ""
 
         imageStream?.use { inputStream ->
             val values = ContentValues().apply {
@@ -198,8 +216,21 @@ class Add : ComponentActivity() {
                     inputStream.copyTo(outputStream)
                 }
                 Log.e("Gallery", "Image saved to: $outputUri")
+
+                val projection = arrayOf(MediaStore.Images.Media.DATA)
+                contentResolver.query(outputUri, projection, null, null, null)?.use { cursor ->
+                    val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                    if (cursor.moveToFirst()) {
+                        savedPath = cursor.getString(columnIndex)
+                    }
+                }
+
+                if (savedPath.isEmpty()) {
+                    savedPath = outputUri.toString()
+                }
             }
         }
+        return savedPath
     }
 
     private fun setInitialPictureAndField(imageString: String) {
@@ -237,6 +268,4 @@ class Add : ComponentActivity() {
             storageDir
         )
     }
-
-
 }

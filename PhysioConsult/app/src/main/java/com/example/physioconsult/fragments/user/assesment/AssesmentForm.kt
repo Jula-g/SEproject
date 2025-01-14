@@ -1,13 +1,16 @@
 package com.example.physioconsult.fragments.user.assesment
 
 import android.net.Uri
+import android.util.Log
 import com.example.physioconsult.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -42,7 +45,7 @@ import com.example.physioconsult.Main.BottomNavigationBar
 import java.net.URI
 
 @Composable
-fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackClick: () -> Unit, onSavePDFClick: () -> Unit, onGenerateCode: () -> Unit, uri: Uri, angleResults: List<String>, lengthResults: List<String>){
+fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onCloseClick: () -> Unit, onSavePDFClick: () -> Unit, onGenerateCode: () -> Unit, uriList: MutableList<Uri?>, angleResults:Map<String, String>, lengthResults: Map<String, String>, index: Int){
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().padding(2.dp)) {
             Row(
@@ -56,6 +59,7 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                         .weight(1f)
                         .aspectRatio(1.2f)
                 ) {
+                    val uri = uriList[index]
                     if (uri != null) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
@@ -83,7 +87,11 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                     ) {
                         // Previous Button
                         IconButton(
-                            onClick = { onPreviousClick() },
+                            onClick = {
+                                onPreviousClick()
+                                Log.d("AssesmentForm", "previous button clicked")
+                                      },
+                            enabled = index > 0,
                             modifier = Modifier
                                 .padding(8.dp)
                                 .background(Color.Black.copy(alpha = 0.6f), shape = CircleShape)
@@ -97,7 +105,11 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
 
                         // Next Button
                         IconButton(
-                            onClick = { onNextClick() },
+                            onClick = {
+                                onNextClick()
+                                Log.d("AssesmentForm", "next button clicked")
+                                      },
+                            enabled = index < uriList.size-1,
                             modifier = Modifier
                                 .padding(8.dp)
                                 .background(Color.Black.copy(alpha = 0.6f), shape = CircleShape)
@@ -112,8 +124,6 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                 }
             }
 
-
-            // Lower row
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -121,32 +131,15 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                     .weight(2f),
                 contentAlignment = Alignment.Center
             ) {
-
-                // TODO:
-                //  display angles: base angle (ankles), hip angle, shoulder angle
-                //  display lengths: Thigh, Shin, Forearm, Arm (left and right)
-
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val angles = listOf("Hips", "Shoulders")
+                    val lengths = listOf("Thigh L", "Thigh R", "Shin L", "Shin R", "Forearm L", "Forearm R", "Arm L", "Arm R")
+                    val lengths2 = listOf("Thigh L", "Shin L", "Forearm L", "Arm L")
 
-                    val angles = listOf(
-                        "Hips",
-                        "Shoulders",
-                    )
-
-                    val lengths = listOf(
-                        "Thigh L",
-                        "Thigh R",
-                        "Shin L",
-                        "Shin R",
-                        "Forearm L",
-                        "Forearm R",
-                        "Arm L",
-                        "Arm R"
-                    )
-
+                    // Angles Section
                     Text(
                         text = "Angles",
                         style = TextStyle(
@@ -162,12 +155,13 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                             .height(2.dp),
                         color = Color.LightGray
                     )
+
                     Column(modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .padding(vertical = 16.dp)
                         .background(Color.LightGray)
                     ) {
-                        angles.forEachIndexed { i, angle ->
+                        angles.forEach { angle ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -179,12 +173,11 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                                         .weight(1f)
                                         .padding(4.dp)
                                         .align(Alignment.CenterVertically),
-                                    color = Color.Black,
-
-                                    )
+                                    color = Color.Black
+                                )
 
                                 Text(
-                                    text = angleResults[i],
+                                    text = angleResults[angle] ?: "No Result",
                                     modifier = Modifier
                                         .weight(1f)
                                         .padding(4.dp)
@@ -197,6 +190,7 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Lengths Section
                     Text(
                         text = "Lengths",
                         style = TextStyle(
@@ -211,12 +205,15 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                             .height(2.dp),
                         color = Color.LightGray
                     )
+
                     Column(modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .padding(vertical = 16.dp)
                         .background(Color.LightGray)
+                        .verticalScroll(rememberScrollState())
                     ) {
-                        lengths.forEachIndexed { i, length ->
+                        val lengthsToUse = if (index == 2) lengths2 else lengths
+                        lengthsToUse.forEach { length ->
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -227,12 +224,11 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                                         .weight(1f)
                                         .padding(4.dp)
                                         .align(Alignment.CenterVertically),
-                                    color = Color.Black,
-
-                                    )
+                                    color = Color.Black
+                                )
 
                                 Text(
-                                    text = lengthResults[i],
+                                    text = lengthResults[length] ?: "No Result",
                                     modifier = Modifier
                                         .weight(1f)
                                         .padding(4.dp)
@@ -242,7 +238,6 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                             }
                         }
                     }
-
                 }
             }
 
@@ -264,8 +259,8 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                             .weight(1f)
                             .height(48.dp),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = Color(0xFF84ACD8),    // Background color
-                            contentColor = Color.White      // Text color
+                            containerColor = Color(0xFF84ACD8),
+                            contentColor = Color.White
                         )
                     ) {
                         Text(
@@ -285,8 +280,8 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                             .weight(1f)
                             .height(48.dp),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = Color(0xFF84ACD8),    // Background color
-                            contentColor = Color.White      // Text color
+                            containerColor = Color(0xFF84ACD8),
+                            contentColor = Color.White
                         )
                     ) {
                         Text(
@@ -304,18 +299,18 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
                 Spacer(modifier = Modifier.height(8.dp))
 
                 FilledTonalButton(
-                    onClick = { onBackClick() },
+                    onClick = { onCloseClick() },
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .height(48.dp)
                         .align(Alignment.CenterHorizontally),
                     colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = Color(0xFF84ACD8),    // Background color
-                        contentColor = Color.White      // Text color
+                        containerColor = Color(0xFF84ACD8),
+                        contentColor = Color.White
                     )
                 ) {
                     Text(
-                        text = "Back",
+                        text = "Close",
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 28.sp
@@ -333,18 +328,22 @@ fun AssesmentForm(onNextClick: () -> Unit, onPreviousClick: () -> Unit, onBackCl
 @Preview(showBackground = true)
 @Composable
 fun AssesmentFormPreview() {
-    val sampleImages = Uri.parse("android.resource://com.example.physioconsult/drawable/front_view")
-    val sampleAngleList = List(2) { "Result $it" }
-    val sampleLengthList = List(8) { "Result $it" }
+    val sampleImages = mutableListOf(Uri.parse("android.resource://com.example.physioconsult/drawable/front_view"))
+    val sampleAngleMap = mapOf("Hips" to "45°", "Shoulders" to "30°")
+    val sampleLengthMap = mapOf(
+        "Thigh L" to "60 cm", "Thigh R" to "58 cm", "Shin L" to "40 cm", "Shin R" to "42 cm",
+        "Forearm L" to "35 cm", "Forearm R" to "34 cm", "Arm L" to "50 cm", "Arm R" to "48 cm"
+    )
 
     AssesmentForm(
         onNextClick = { /* Handle back click */ },
         onPreviousClick = { /* Handle back click */ },
-        onBackClick = { /* Handle back click */ },
+        onCloseClick = { /* Handle back click */ },
         onSavePDFClick = { /* Handle Save PDF click */ },
         onGenerateCode = { /* Handle Generate Code click */ },
-        uri = sampleImages,
-        angleResults = sampleAngleList,
-        lengthResults = sampleLengthList
+        uriList = sampleImages,
+        angleResults = sampleAngleMap,
+        lengthResults = sampleLengthMap,
+        index = 1
     )
 }
