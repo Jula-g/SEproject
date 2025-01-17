@@ -1,21 +1,36 @@
 package com.example.physioconsult.fragments.user.assesment
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.pdf.PdfDocument
+import android.graphics.pdf.PdfDocument.Page
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import com.example.physioconsult.Main.MainActivity
+import com.example.physioconsult.fragments.ImageUtils
+import com.example.physioconsult.fragments.PDFUtils
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.mlkit.vision.pose.Pose
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class Assesment : ComponentActivity() {
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
     private val measure = Measure()
+    private val pdfManager = PDFUtils()
 
     private var i = mutableStateOf(0)
     private var uriList = mutableListOf<Uri?>()
@@ -87,7 +102,7 @@ class Assesment : ComponentActivity() {
                                 )
                             )
                         },
-                        onSavePDFClick = { /* TODO: create save to PDF method that will assemble and save a PDF version of the active assesment */ },
+                        onSavePDFClick = { pdfManager.generatePDF(uriList,this,frontResult,backResult,sideResult) },
                         onGenerateCode = {/* TODO: implement generate access code functionality*/ },
                         uriList = uriList,
                         angleResults = angResult,
@@ -206,4 +221,6 @@ class Assesment : ComponentActivity() {
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { e -> onFailure(e) }
     }
+
+
 }
