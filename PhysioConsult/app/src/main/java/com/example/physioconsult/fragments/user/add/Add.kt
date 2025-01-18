@@ -105,12 +105,12 @@ class Add : ComponentActivity() {
                         //  if below -> READ_MEDIA_IMAGES
                         if (ContextCompat.checkSelfPermission(
                                 this,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
+                                Manifest.permission.READ_MEDIA_IMAGES
                             ) != PackageManager.PERMISSION_GRANTED) {
                             Log.e("OnChooseFromGalleryClick", "permissions checked")
                             ActivityCompat.requestPermissions(
                                 this,
-                                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
                                 1
                             )
                             Log.e("OnChooseFromGalleryClick", "asked for permission")
