@@ -1,12 +1,8 @@
 package com.example.physioconsult.Main
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -19,9 +15,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,25 +27,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.physioconsult.R
 import com.example.physioconsult.SideNavMenu.SideNavigationMenu
+import com.example.physioconsult.user.fetchUserData
 import com.example.physioconsult.fragments.user.add.Add
-import com.example.physioconsult.login.LogIn.Credentials
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
-
 import kotlinx.coroutines.launch
 
+/**
+ * Main activity form composable function.
+ * Displays the main UI for the activity, including a top app bar, bottom navigation bar, and content.
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Preview
 @Composable
 fun MainActivityForm() {
-    // State for the drawer to open or close it
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope() // Required to control drawer state
+    val scope = rememberCoroutineScope()
 
-    // ModalNavigationDrawer wraps the content and provides a side navigation bar
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = { SideNavigationMenu() } // Add the side navigation content here
+        drawerContent = { SideNavigationMenu() }
     ) {
         Scaffold(
             topBar = {
@@ -75,15 +75,34 @@ fun MainActivityForm() {
             }
         )
         { innerPadding ->
-            Content(Modifier.padding(innerPadding)) // Your main content
+            Content(Modifier.padding(innerPadding))
         }
     }
 }
 
-
+/**
+ * Content composable function.
+ * Displays the main content of the activity, including user information and action buttons.
+ *
+ * @param modifier Modifier to be applied to the content layout.
+ */
 @Composable
 fun Content(modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    val colors = MaterialTheme.colorScheme
+    val auth = FirebaseAuth.getInstance()
+    val userId = auth.currentUser?.uid
+    val name = remember { mutableStateOf("Name") }
+    val surname = remember { mutableStateOf("Surname") }
+
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            val userData = fetchUserData(userId)
+            name.value = userData["name"] ?: "Name"
+            surname.value = userData["surname"] ?: "Surname"
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -91,7 +110,6 @@ fun Content(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header with greeting and avatar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -103,12 +121,12 @@ fun Content(modifier: Modifier = Modifier) {
                 Text(
                     text = "Hello!",
                     fontSize = 28.sp,
-                    color = Color.Black
+                    color = colors.onSurface
                 )
                 Text(
-                    text = "User (not done)",
+                    text = "${name.value} ${surname.value}",
                     fontSize = 20.sp,
-                    color = Color.Black
+                    color = colors.onSurface
                 )
             }
 
@@ -123,7 +141,6 @@ fun Content(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Introduction/Description Section
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -132,14 +149,14 @@ fun Content(modifier: Modifier = Modifier) {
             Text(
                 text = "Welcome!",
                 fontSize = 24.sp,
-                color = Color.Black,
+                color = colors.onSurface,
                 textAlign = TextAlign.Start,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Physio Consult is an app that speeds up process of physical body measurements, and assessments of it measurement.",
+                text = "Physio Consult is an app that speeds up the process of physical body measurements, and assessments of it measurement.",
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = colors.onSurface,
                 textAlign = TextAlign.Start
             )
         }
@@ -151,18 +168,16 @@ fun Content(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-
         }
         val imageCamera: Painter =
             painterResource(id = R.drawable.focus)
 
-        // Take Image Section
         CardButtonCamera(
             text = "Take Assessment",
             title = "Assessment",
             description = "By creating a new Assessment you can measure your posture...",
             icon = imageCamera,
-            backgroundColor = Color(0xFF84ACD8), // Light Blue
+            backgroundColor = Color(0xFF84ACD8),
             onClick = { navigatePhoto(context) }
         )
 
@@ -170,13 +185,12 @@ fun Content(modifier: Modifier = Modifier) {
 
         val imageChart: Painter =
             painterResource(id = R.drawable.medical)
-        // Appointments Section
-        CardButtonAppointments(
+        CardButtonAssessments(
             text = "Last Assessment",
             title = "Appointments",
             description = "View your upcoming consultations.",
             icon = imageChart,
-            backgroundColor = Color(0xFF84ACD8) // Light Green
+            backgroundColor = Color(0xFF84ACD8)
         )
     }
 }
@@ -189,6 +203,11 @@ fun LogInFormPreviewDark() {
     }
 }
 
+/**
+ * Navigates to the photo activity.
+ *
+ * @param context The context from which the navigation is initiated.
+ */
 fun navigatePhoto(context: Context) {
     context.startActivity(Intent(context, Add::class.java))
 }

@@ -1,5 +1,6 @@
-package com.example.physioconsult.SideNavMenu
+package com.example.physioconsult.physiotherapist
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,11 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PeopleOutline
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,20 +29,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.physioconsult.Main.MainActivity
 import com.example.physioconsult.user.fetchUserData
 import com.google.firebase.auth.FirebaseAuth
 
-
 /**
- * SideNavigationMenu composable function.
- * Displays a side navigation menu with user information and menu items.
+ * Composable function that displays the side navigation menu for the physiotherapist.
+ * It includes user information and navigation items.
  */
-
 @Composable
-fun SideNavigationMenu() {
+fun SideNavPhysiotherapist() {
+    val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
     val userId = auth.currentUser?.uid
     val name = remember { mutableStateOf("Name") }
@@ -92,40 +93,32 @@ fun SideNavigationMenu() {
         MenuItem(
             icon = Icons.Default.Home,
             label = "Home",
-            onClick = {  }
+            onClick = {
+                context.startActivity(Intent(context, MainActivity::class.java))
+            }
         )
+
         MenuItem(
-            icon = Icons.Default.Schedule,
-            label = "Schedule",
-            onClick = { /* Add schedule navigation */ }
-        )
-        MenuItem(
-            icon = Icons.Default.Add,
-            label = "Add",
-            onClick = { /* Add action */ }
-        )
-        MenuItem(
-            icon = Icons.Default.History,
-            label = "History",
+            icon = Icons.Default.PeopleOutline,
+            label = "Patients",
             onClick = { /* History action */ }
         )
         MenuItem(
-            icon = Icons.Default.History,
+            icon = Icons.Default.Settings,
             label = "Settings",
             onClick = { }
         )
 
         Spacer(modifier = Modifier.weight(1f))
-    }
+       }
 }
 
 /**
- * MenuItem composable function.
- * Displays a menu item with an icon and label.
+ * Composable function that represents a menu item in the side navigation menu.
  *
- * @param icon The icon to display.
- * @param label The label to display.
- * @param onClick The action to perform when the item is clicked.
+ * @param icon The icon to display for the menu item.
+ * @param label The label to display for the menu item.
+ * @param onClick The action to perform when the menu item is clicked.
  */
 
 @Composable
