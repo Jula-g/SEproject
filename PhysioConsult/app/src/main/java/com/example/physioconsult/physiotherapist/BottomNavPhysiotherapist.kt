@@ -1,14 +1,11 @@
-package com.example.physioconsult.Main
+package com.example.physioconsult.physiotherapist
 
-import android.content.Context
-import android.content.Intent
+import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.filled.PeopleOutline
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -21,21 +18,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.physioconsult.fragments.therapist.ViewImage
 
 /**
- * Composable function that displays the bottom navigation bar.
- * It includes navigation items for Home, Schedule, Add, and History.
+ * Composable function to create a bottom navigation bar for the physiotherapist application.
  *
- * The navigation bar has a rounded top shape and a custom background color.
- * Each navigation item has an icon and a label.
+ * The navigation bar includes three items:
+ * - Home
+ * - Assessments
+ * - Patients
  *
- * @param context The context used to start activities.
+ * Each item includes an icon and a label. The navigation bar has rounded corners at the top.
  */
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun BottomNavigationBar() {
+fun BottomNavPhysiotherapist() {
     val context = LocalContext.current
     Surface(
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -52,26 +49,27 @@ fun BottomNavigationBar() {
                 onClick = { /* home */ }
             )
             NavigationBarItem(
-                icon = { NavigationBarIcon(Icons.Default.Schedule, "Schedule Icon") },
-                label = { Text("Schedule") },
-                selected = false,
-                onClick = { /* schedule */ }
-            )
-            NavigationBarItem(
-                icon = { NavigationBarIcon(Icons.Default.Add, "Add Icon") },
-                label = { Text("Add") },
+                icon = { NavigationBarIcon(Icons.Default.ContentPaste, "Assessments") },
+                label = { Text("Assessments") },
                 selected = false,
                 onClick = { /* assessments */ }
             )
             NavigationBarItem(
-                icon = { NavigationBarIcon(Icons.Default.History, "History Icon") },
-                label = { Text("History") },
+                icon = { NavigationBarIcon(Icons.Default.PeopleOutline, "Patients") },
+                label = { Text("Patients") },
                 selected = false,
-                onClick = { navigateViewPhoto(context) }
+                onClick = { }
             )
         }
     }
 }
+
+/**
+ * Composable function to create an icon for a navigation bar item.
+ *
+ * @param icon The vector graphic for the icon.
+ * @param contentDescription A description of the icon for accessibility purposes.
+ */
 
 @Composable
 fun NavigationBarIcon(
@@ -83,8 +81,4 @@ fun NavigationBarIcon(
         contentDescription = contentDescription,
         tint = Color.Black
     )
-}
-
-fun navigateViewPhoto(context: Context) {
-    context.startActivity(Intent(context, ViewImage::class.java))
 }

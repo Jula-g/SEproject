@@ -1,7 +1,6 @@
 package com.example.physioconsult.Main
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,29 +26,31 @@ import androidx.compose.ui.unit.sp
 
 
 /**
- * Composable function that represents a card button with an icon, title, and description.
+ * Composable function that displays a card button for assessments.
  *
- * @param text The text to display at the top of the card.
+ * @param text The text to display inside the card.
  * @param title The title to display inside the card.
  * @param description The description to display inside the card.
  * @param icon The icon to display inside the card.
  * @param backgroundColor The background color of the card.
- * @param onClick The action to perform when the card is clicked.
  */
+
 @Composable
-fun CardButtonCamera(
+fun CardButtonAssessments(
     text: String,
     title: String,
     description: String,
     icon: Painter,
-    backgroundColor: Color,
-    onClick: () -> Unit
+    backgroundColor: Color
+
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
+        val colors = MaterialTheme.colorScheme
+
         Text(
             text = text,
             fontSize = 24.sp,
-            color = Color.Black,
+            color = colors.onSurface,
             textAlign = TextAlign.Start,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -59,8 +61,7 @@ fun CardButtonCamera(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp)
-                .clickable { onClick() },
+                .height(120.dp),
             colors = CardDefaults.cardColors(containerColor = backgroundColor),
             shape = RoundedCornerShape(28.dp),
             elevation = CardDefaults.cardElevation(
