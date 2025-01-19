@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.pose.detection.common)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") // add this
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

@@ -1,31 +1,21 @@
 package com.example.physioconsult.fragments.user.assesment
 
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.pdf.PdfDocument
-import android.graphics.pdf.PdfDocument.Page
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import com.example.physioconsult.Main.MainActivity
-import com.example.physioconsult.fragments.ImageUtils
 import com.example.physioconsult.fragments.PDFUtils
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.mlkit.vision.pose.Pose
-import java.io.File
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class Assesment : ComponentActivity() {
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -41,7 +31,7 @@ class Assesment : ComponentActivity() {
     private lateinit var backResult: Map<String, Double?>
     private lateinit var sideResult: Map<String, Double?>
 
-        override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val documentId = intent.getStringExtra("documentId")
         val frontImage = intent.getStringExtra("frontImage")
@@ -102,8 +92,26 @@ class Assesment : ComponentActivity() {
                                 )
                             )
                         },
-                        onSavePDFClick = { pdfManager.generatePDF(uriList,this,frontResult,backResult,sideResult) },
-                        onGenerateCode = {/* TODO: implement generate access code functionality*/ },
+                        onSavePDFClick = {
+                            pdfManager.generatePDF(
+                                uriList,
+                                this,
+                                frontResult,
+                                backResult,
+                                sideResult
+                            )
+                        },
+                        onGenerateCode = {
+                            if (userId != null && documentId != null) {
+                                addCodeToFirebase(this,userId, documentId,
+                                    onSuccess = {
+                                        Log.d("Code", "${userId}, ${documentId}")
+                                    },
+                                    onFailure = { exception ->
+                                        Log.e("Code", "Code generation failed: ${exception.message}")
+                                    })
+                            }
+                        },
                         uriList = uriList,
                         angleResults = angResult,
                         lengthResults = lenResult,
@@ -114,7 +122,12 @@ class Assesment : ComponentActivity() {
         }
     }
 
-    private fun update(frontResults: Map<String, Double?>, backResults: Map<String, Double?>, sideResults: Map<String, Double?>, index: Int) {
+    private fun update(
+        frontResults: Map<String, Double?>,
+        backResults: Map<String, Double?>,
+        sideResults: Map<String, Double?>,
+        index: Int
+    ) {
         when (index) {
             0 -> { // Front View
                 val keys = listOf(
@@ -214,12 +227,136 @@ class Assesment : ComponentActivity() {
         val data = mapOf(
             "front" to frontResults,
             "back" to backResults,
-            "side" to sideResults
+            "side" to sideResults,
+            "code" to null
         )
 
         docRef.update(data)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { e -> onFailure(e) }
+    }
+
+
+    private fun addCodeToFirebase(
+        context: Context,
+        userId: String,
+        documentId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        checkIfDocumentHasCode(
+            userId,
+            documentId,
+            onResult = { code ->
+                if (code == null) {
+                    generateCode(
+                        onCodeGenerated = { newCode ->
+                            val db = FirebaseFirestore.getInstance()
+                            val docRefUser = db.collection(userId).document(documentId)
+
+                            val data = mapOf("code" to newCode)
+
+                            docRefUser.set(data, SetOptions.merge())
+                                .addOnSuccessListener {
+                                    showPopup(context, newCode)
+                                    onSuccess()
+                                }
+                                .addOnFailureListener { e ->
+                                    onFailure(e)
+                                }
+                            val docRefCodes = db.collection("Codes").document(newCode)
+
+                            val data2 = mapOf(
+                                "collection" to userId,
+                                "document" to documentId
+                                )
+                            docRefCodes.set(data2)
+                                .addOnSuccessListener {
+                                    onSuccess()
+                                }
+                                .addOnFailureListener { e ->
+                                    onFailure(e)
+                                }
+
+                        },
+                        onError = { exception ->
+                            onFailure(exception)
+                        }
+                    )
+                } else {
+                    showPopup(context, code)
+                    onSuccess()
+                }
+            },
+            onError = { exception ->
+                onFailure(exception)
+            }
+        )
+    }
+
+
+
+    private fun checkIfDocumentHasCode(
+        userId: String,
+        documentId: String,
+        onResult: (String?) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection(userId).document(documentId)
+
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val code = document.getString("code")
+                    onResult(code)
+                } else {
+                    onResult(null)
+                }
+            }
+            .addOnFailureListener { exception ->
+                onError(exception)
+            }
+    }
+
+
+
+    private fun showPopup(context: Context, code: String) {
+        AlertDialog.Builder(context)
+            .setTitle("Your Code")
+            .setMessage(code)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    private fun generateCode(
+        onCodeGenerated: (String) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+
+        fun attemptCodeGeneration() {
+            val code = (0..999999).random().toString().padStart(6, '0')
+            val docRef = db.collection("Codes").document(code)
+
+            docRef.get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        attemptCodeGeneration()
+                    } else {
+                        onCodeGenerated(code)
+                    }
+                }
+
+                .addOnFailureListener { exception ->
+                    onError(exception)
+                }
+        }
+
+        attemptCodeGeneration()
     }
 
 
