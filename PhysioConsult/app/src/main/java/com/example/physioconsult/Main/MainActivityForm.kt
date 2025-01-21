@@ -187,8 +187,8 @@ fun Content(modifier: Modifier = Modifier) {
             painterResource(id = R.drawable.medical)
         CardButtonAssessments(
             text = "Last Assessment",
-            title = "Appointments",
-            description = "View your upcoming consultations.",
+            title = "Assessments",
+            description = "View your previous assessments.",
             icon = imageChart,
             backgroundColor = Color(0xFF84ACD8)
         )
