@@ -52,12 +52,6 @@ fun BottomNavigationBar() {
                 onClick = { /* home */ }
             )
             NavigationBarItem(
-                icon = { NavigationBarIcon(Icons.Default.Schedule, "Schedule Icon") },
-                label = { Text("Schedule") },
-                selected = false,
-                onClick = { /* schedule */ }
-            )
-            NavigationBarItem(
                 icon = { NavigationBarIcon(Icons.Default.Add, "Add Icon") },
                 label = { Text("Add") },
                 selected = false,
@@ -69,6 +63,7 @@ fun BottomNavigationBar() {
                 selected = false,
                 onClick = { navigateViewPhoto(context) }
             )
+
         }
     }
 }

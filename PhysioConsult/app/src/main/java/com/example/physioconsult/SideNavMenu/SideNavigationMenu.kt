@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -95,11 +96,6 @@ fun SideNavigationMenu() {
             onClick = {  }
         )
         MenuItem(
-            icon = Icons.Default.Schedule,
-            label = "Schedule",
-            onClick = { /* Add schedule navigation */ }
-        )
-        MenuItem(
             icon = Icons.Default.Add,
             label = "Add",
             onClick = { /* Add action */ }
@@ -110,8 +106,14 @@ fun SideNavigationMenu() {
             onClick = { /* History action */ }
         )
         MenuItem(
-            icon = Icons.Default.History,
+            icon = Icons.Default.Settings,
             label = "Settings",
+            onClick = { }
+        )
+
+        MenuItem(
+            icon = Icons.Default.Person,
+            label = "Log out",
             onClick = { }
         )
 
