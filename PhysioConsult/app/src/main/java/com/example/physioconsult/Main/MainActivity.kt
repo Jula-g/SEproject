@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.example.physioconsult.physiotherapist.EnterCodeForm
 import com.example.physioconsult.user.getUserRole
 import com.example.physioconsult.physiotherapist.PhysiotherapistForm
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
@@ -23,23 +24,35 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val auth = FirebaseAuth.getInstance()
-        val userId = auth.currentUser?.uid
 
         setContent {
             PhysioConsultTheme {
-                if (userId != null) {
-                    val userRole = remember { mutableStateOf<String?>(null) }
+                val auth = FirebaseAuth.getInstance()
+                val userId = auth.currentUser?.uid
+                val currentScreen = remember { mutableStateOf("Loading") }
+                val userRole = remember { mutableStateOf<String?>(null) }
 
+                if (userId != null) {
                     LaunchedEffect(Unit) {
                         userRole.value = getUserRole(userId)
+                        currentScreen.value = when (userRole.value) {
+                            "patient" -> "MainActivityForm"
+                            "physiotherapist" -> "PhysiotherapistForm"
+                            else -> "MainActivityForm"
+                        }
                     }
 
-                    when (userRole.value) {
-                        "patient" -> MainActivityForm()
-                        "physiotherapist" -> PhysiotherapistForm()
-                        else -> MainActivityForm()
+                    when (currentScreen.value) {
+                        "MainActivityForm" -> MainActivityForm()
+                        "PhysiotherapistForm" -> PhysiotherapistForm(
+                            onNavigateToEnterCode = { currentScreen.value = "EnterCodeForm" }
+                        )
+                        "EnterCodeForm" -> EnterCodeForm(
+                            onBack = { currentScreen.value = "PhysiotherapistForm" }
+                        )
                     }
+                } else {
+                    MainActivityForm()
                 }
             }
         }

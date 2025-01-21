@@ -37,9 +37,8 @@ import kotlinx.coroutines.launch
  */
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun PhysiotherapistForm() {
+fun PhysiotherapistForm(onNavigateToEnterCode: () -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val colors = MaterialTheme.colorScheme
@@ -151,7 +150,7 @@ fun PhysiotherapistForm() {
                     icon = Icons.Default.ContentPaste,
                     backgroundColor = Color(0xFF84ACD8),
                     iconTint = Color.White,
-                    onClick = { navigateViewPhoto(context) }
+                    onClick = { onNavigateToEnterCode() }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
