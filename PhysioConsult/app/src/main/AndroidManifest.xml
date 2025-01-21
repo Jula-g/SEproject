@@ -47,6 +47,10 @@
             android:name=".fragments.user.add.Add"
             android:exported="false" />
         <activity
+            android:name=".fragments.user.assesment.Assesment"
+            android:exported="true"
+            android:theme="@style/Theme.PhysioConsult" />
+        <activity
             android:name=".fragments.therapist.ViewImage"
             android:exported="false" />
         <activity

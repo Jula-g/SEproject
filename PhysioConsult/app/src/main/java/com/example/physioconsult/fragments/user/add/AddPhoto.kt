@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,7 +43,7 @@ fun AddPhoto(onTakePhotoClick: () -> Unit, onChooseFromGalleryClick: () -> Unit,
                 imageUri1?.let {
                     Image(
                         painter = rememberImagePainter(it),
-                        contentDescription = "Selected Image",
+                        contentDescription = "Template Image",
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.Center)
@@ -115,10 +114,11 @@ fun AddPhoto(onTakePhotoClick: () -> Unit, onChooseFromGalleryClick: () -> Unit,
                         // Text field
                         BasicTextField(
                             value = textFieldStates[index].value,
-                            onValueChange = { textFieldStates[index].value = it },
+                            onValueChange = {},
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(start = 8.dp),
+                            enabled = false,
                             keyboardOptions = KeyboardOptions.Default
                         )
                     }
@@ -128,8 +128,11 @@ fun AddPhoto(onTakePhotoClick: () -> Unit, onChooseFromGalleryClick: () -> Unit,
 
                 // Confirm button
                 FilledTonalButton(
-                    onClick = { onConfirmClick() },
-                    enabled = areAllChecked,
+                    onClick = {
+                        onConfirmClick()
+                        checkboxStates.forEach { it.value = false }
+                        },
+                    enabled = areAllChecked && imageUri2 != null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
