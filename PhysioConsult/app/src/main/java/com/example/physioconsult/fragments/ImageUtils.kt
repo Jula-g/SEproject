@@ -10,10 +10,7 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.ByteArrayOutputStream
 
@@ -61,7 +58,6 @@ class ImageUtils{
             data[field[i]] = images[i] // Assign the field to its corresponding image
         }
 
-        // Save the data to Firestore
         if (textDataRef != null) {
             textDataRef.set(data)
                 .addOnSuccessListener {
@@ -81,7 +77,6 @@ class ImageUtils{
     fun rotateImageIfRequired(context: Context, imageUri: Uri): Bitmap? {
         val inputStream = context.contentResolver.openInputStream(imageUri) ?: return null
 
-        // Read EXIF metadata
         val exif = ExifInterface(inputStream)
         val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
 

@@ -57,19 +57,19 @@ class ViewImage : ComponentActivity() {
             1 -> {
                 pictureUri.value =
                     Uri.parse("android.resource://com.example.physioconsult/drawable/front_view")
-                field = "FrontURL"
+                field = "Front"
             }
 
             2 -> {
                 pictureUri.value =
                     Uri.parse("android.resource://com.example.physioconsult/drawable/back_view")
-                field = "BackURL"
+                field = "Back"
             }
 
             3 -> {
                 pictureUri.value =
                     Uri.parse("android.resource://com.example.physioconsult/drawable/side_view")
-                field = "SideURL"
+                field = "Side"
             }
         }
 
@@ -91,6 +91,9 @@ class ViewImage : ComponentActivity() {
                                 userId,
                                 imageFields
                             ) { uris ->
+                                if (uris.isNotEmpty()) {
+                                    imageUri.value = uris[0]
+                                }
                             }
                         }
                     },

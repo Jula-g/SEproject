@@ -63,9 +63,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    
     implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta5")
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -77,8 +75,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
-
-
     implementation ("androidx.navigation:navigation-compose:2.7.1")
     implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
     implementation (libs.mongodb.driver.sync)
