@@ -48,8 +48,9 @@ class MainActivity : ComponentActivity() {
                             onNavigateToEnterCode = { currentScreen.value = "EnterCodeForm" }
                         )
                         "EnterCodeForm" -> EnterCodeForm(
-                            onBack = { currentScreen.value = "PhysiotherapistForm" }
-                        )
+                        onBack = { currentScreen.value = "PhysiotherapistForm" },
+                        physiotherapistId = userId
+                    )
                     }
                 } else {
                     MainActivityForm()
