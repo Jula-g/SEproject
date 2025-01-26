@@ -3,10 +3,8 @@ package com.example.physioconsult.fragments.user.add
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -21,12 +19,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import com.example.physioconsult.Main.MainActivity
 import com.example.physioconsult.fragments.ImageUtils
 import com.example.physioconsult.fragments.user.assesment.Assesment
 
