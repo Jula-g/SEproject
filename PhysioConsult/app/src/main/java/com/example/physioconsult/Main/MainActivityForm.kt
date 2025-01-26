@@ -25,8 +25,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.physioconsult.R
 import com.example.physioconsult.SideNavMenu.SideNavigationMenu
+import com.example.physioconsult.fragments.user.HistoryActivity
 import com.example.physioconsult.user.fetchUserData
 import com.example.physioconsult.fragments.user.add.Add
 import com.example.physioconsult.ui.theme.PhysioConsultTheme
@@ -39,43 +45,52 @@ import kotlinx.coroutines.launch
  */
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun MainActivityForm() {
+    val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
+
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = { SideNavigationMenu() }
+        drawerContent = {
+            SideNavigationMenu(onCloseDrawer = { coroutineScope.launch { drawerState.close() } })
+        }
     ) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().padding(75.dp)
-                        ) {
-                            Text("PhysioConsult", color = Color(0xFF84ACD8))
-                        }
-                    },
+                    title = { Text("PhysioConsult", color = Color(0xFF84ACD8)) },
                     navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu Icon",
-                                tint = Color(0xFF84ACD8)
-                            )
+                        if (currentRoute != "add") {
+                            IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "Menu Icon",
+                                    tint = Color(0xFF84ACD8)
+                                )
+                            }
                         }
                     },
                 )
             },
             bottomBar = {
-                BottomNavigationBar()
+                if (currentRoute != "add") {
+                    BottomNavigationBar(navController = navController)
+                }
             }
-        )
-        { innerPadding ->
-            Content(Modifier.padding(innerPadding))
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = "home",
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable("home") { Content(navController = navController) }
+                composable("add") { Add() }
+                composable("history") { HistoryActivity() }
+            }
         }
     }
 }
@@ -87,7 +102,7 @@ fun MainActivityForm() {
  * @param modifier Modifier to be applied to the content layout.
  */
 @Composable
-fun Content(modifier: Modifier = Modifier) {
+fun Content(modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
     val auth = FirebaseAuth.getInstance()
@@ -190,7 +205,8 @@ fun Content(modifier: Modifier = Modifier) {
             title = "Assessments",
             description = "View your previous assessments.",
             icon = imageChart,
-            backgroundColor = Color(0xFF84ACD8)
+            backgroundColor = Color(0xFF84ACD8),
+            onClick = { navigateHistory(context) }
         )
     }
 }
@@ -210,4 +226,14 @@ fun LogInFormPreviewDark() {
  */
 fun navigatePhoto(context: Context) {
     context.startActivity(Intent(context, Add::class.java))
+}
+
+/**
+ * Navigates to the history activity.
+ *
+ * @param context The context from which the navigation is initiated.
+ */
+
+fun navigateHistory(context: Context) {
+    context.startActivity(Intent(context, HistoryActivity::class.java))
 }

@@ -1,4 +1,4 @@
-package com.example.physioconsult.physiotherapist
+package com.example.physioconsult.SideNavMenu
 
 import android.content.Intent
 import androidx.compose.foundation.background
@@ -33,7 +33,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.physioconsult.Main.MainActivity
+import com.example.physioconsult.login.LogIn.LoginActivity
 import com.example.physioconsult.user.fetchUserData
 import com.google.firebase.auth.FirebaseAuth
 
@@ -42,7 +44,7 @@ import com.google.firebase.auth.FirebaseAuth
  * It includes user information and navigation items.
  */
 @Composable
-fun SideNavPhysiotherapist() {
+fun SideNavPhysiotherapist(navController: NavHostController) {
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
     val userId = auth.currentUser?.uid
@@ -90,27 +92,35 @@ fun SideNavPhysiotherapist() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        MenuItem(
+        MenuPhysioItem(
             icon = Icons.Default.Home,
             label = "Home",
             onClick = {
-                context.startActivity(Intent(context, MainActivity::class.java))
+                navController.navigate("home")
             }
         )
 
-        MenuItem(
+        MenuPhysioItem(
             icon = Icons.Default.PeopleOutline,
             label = "Patients",
-            onClick = { /* History action */ }
+            onClick = { navController.navigate("patients") }
         )
-        MenuItem(
+        MenuPhysioItem(
             icon = Icons.Default.Settings,
             label = "Settings",
-            onClick = { }
+            onClick = { navController.navigate("settings") }
+        )
+        MenuPhysioItem(
+            icon = Icons.Default.Person,
+            label = "Logout",
+            onClick = {
+                auth.signOut()
+                context.startActivity(Intent(context, LoginActivity::class.java))
+            }
         )
 
         Spacer(modifier = Modifier.weight(1f))
-       }
+    }
 }
 
 /**
@@ -122,7 +132,7 @@ fun SideNavPhysiotherapist() {
  */
 
 @Composable
-fun MenuItem(
+fun MenuPhysioItem(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit
