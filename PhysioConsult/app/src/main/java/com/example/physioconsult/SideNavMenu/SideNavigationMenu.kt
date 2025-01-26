@@ -1,5 +1,6 @@
 package com.example.physioconsult.SideNavMenu
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,9 +31,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.physioconsult.Main.MainActivity
+import com.example.physioconsult.Main.navigateHistory
+import com.example.physioconsult.Main.navigatePhoto
+import com.example.physioconsult.fragments.user.HistoryActivity
+import com.example.physioconsult.login.LogIn.LoginActivity
 import com.example.physioconsult.user.fetchUserData
 import com.google.firebase.auth.FirebaseAuth
 
@@ -43,9 +50,10 @@ import com.google.firebase.auth.FirebaseAuth
  */
 
 @Composable
-fun SideNavigationMenu() {
+fun SideNavigationMenu(onCloseDrawer: () -> Unit) {
     val auth = FirebaseAuth.getInstance()
     val userId = auth.currentUser?.uid
+    val context = LocalContext.current
     val name = remember { mutableStateOf("Name") }
     val surname = remember { mutableStateOf("Surname") }
 
@@ -56,6 +64,7 @@ fun SideNavigationMenu() {
             surname.value = userData["surname"] ?: "Surname"
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -64,6 +73,7 @@ fun SideNavigationMenu() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
+        // User info section
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -90,36 +100,52 @@ fun SideNavigationMenu() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Menu items
         MenuItem(
             icon = Icons.Default.Home,
             label = "Home",
-            onClick = {  }
+            onClick = {
+                context.startActivity(Intent(context, MainActivity::class.java))
+                onCloseDrawer()
+            }
         )
         MenuItem(
             icon = Icons.Default.Add,
-            label = "Add",
-            onClick = { /* Add action */ }
+            label = "Add Assessment",
+            onClick = {
+                navigatePhoto(context)
+                onCloseDrawer()
+            }
         )
         MenuItem(
             icon = Icons.Default.History,
             label = "History",
-            onClick = { /* History action */ }
+            onClick = {
+                val intent = Intent(context, HistoryActivity::class.java)
+                context.startActivity(intent)
+                onCloseDrawer()
+            }
         )
         MenuItem(
             icon = Icons.Default.Settings,
             label = "Settings",
-            onClick = { }
+            onClick = {
+                onCloseDrawer()
+            }
         )
-
         MenuItem(
             icon = Icons.Default.Person,
             label = "Log out",
-            onClick = { }
+            onClick = {
+                auth.signOut()
+                context.startActivity(Intent(context, LoginActivity::class.java))
+                onCloseDrawer()
+            }
         )
-
         Spacer(modifier = Modifier.weight(1f))
     }
 }
+
 
 /**
  * MenuItem composable function.

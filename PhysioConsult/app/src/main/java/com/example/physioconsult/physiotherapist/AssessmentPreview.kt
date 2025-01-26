@@ -1,7 +1,6 @@
 package com.example.physioconsult.physiotherapist
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.example.physioconsult.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
