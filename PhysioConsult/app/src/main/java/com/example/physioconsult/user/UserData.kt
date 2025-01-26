@@ -44,3 +44,34 @@ suspend fun getUserRole(userId: String): String? {
         Log.e("getUserData", "Error fetching user role", e)
     }.toString()
 }
+
+suspend fun fetchPatients(
+    physiotherapistId: String,
+    onResult: (Map<String, Pair<String, List<String>>>, String?) -> Unit
+) {
+    try {
+        val db = FirebaseFirestore.getInstance()
+        val patientListRef = db.collection("patient_list").document(physiotherapistId)
+
+        val document = patientListRef.get().await()
+        if (document.exists()) {
+            val patientsMap = document.get("patients") as? Map<String, List<String>> ?: emptyMap()
+            val patientDataMap = mutableMapOf<String, Pair<String, List<String>>>()
+
+            patientsMap.forEach { (patientId, assessments) ->
+                val userData = fetchUserData(patientId)
+                val name = userData["name"] ?: "Unknown"
+                val surname = userData["surname"] ?: "Unknown"
+
+                patientDataMap[patientId] = Pair(name + " " + surname, assessments)
+            }
+
+            onResult(patientDataMap, null)
+        } else {
+            onResult(emptyMap(), "No patient list found.")
+        }
+    } catch (e: Exception) {
+        Log.e("FetchPatients", "Error fetching patients: ${e.message}")
+        onResult(emptyMap(), "Failed to fetch the patient list.")
+    }
+}

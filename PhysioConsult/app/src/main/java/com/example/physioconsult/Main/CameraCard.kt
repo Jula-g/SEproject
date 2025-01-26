@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,10 +46,12 @@ fun CardButtonCamera(
     onClick: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
+        val colors = MaterialTheme.colorScheme
+
         Text(
             text = text,
             fontSize = 24.sp,
-            color = Color.Black,
+            color = colors.onSurface,
             textAlign = TextAlign.Start,
             fontWeight = FontWeight.Bold,
             modifier = Modifier

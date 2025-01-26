@@ -10,12 +10,10 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.ByteArrayOutputStream
+import kotlin.text.get
 
 class ImageUtils{
 
@@ -103,39 +101,57 @@ class ImageUtils{
 
 
     // retrieves all fields from specified document in a collection, returns a list of uri values
-    fun retrieveImageFromFirestore(context: Context, documentId: String, userId: String, imageFields: List<String>, imageUris: (List<Uri?>) -> Unit) {
+    fun retrieveImageFromFirestore(
+        context: Context,
+        documentId: String,
+        userId: String,
+        imageFields: List<String>,
+        imageBitmaps: (List<Bitmap?>) -> Unit
+    ) {
         val db = FirebaseFirestore.getInstance()
         val docRef = db.collection(userId).document(documentId)
 
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    val uris = mutableListOf<Uri?>()
+                    val bitmaps = mutableListOf<Bitmap?>()
 
                     for (imageField in imageFields) {
                         val base64String = documentSnapshot.getString(imageField)
 
-                        // Convert Base64 string to Bitmap
-                        if (base64String != null) {
-                            val bitmap = convertBase64ToBitmap(base64String)
-                            if (bitmap != null) {
-                                val uri = getImageUriFromBitmap(context, bitmap)
-                                uris.add(uri)
+                        if (base64String != null && isValidBase64(base64String)) {
+                            try {
+                                // Convert Base64 string to Bitmap
+                                val bitmap = convertBase64ToBitmap(base64String)
+                                if (bitmap != null) {
+                                    bitmaps.add(bitmap)
+                                } else {
+                                    Log.e("ImageRetrieval", "Failed to decode Base64 for field: $imageField")
+                                    bitmaps.add(null) // Placeholder for failed decoding
+                                }
+                            } catch (e: Exception) {
+                                Log.e("ImageRetrieval", "Error converting Base64 to Bitmap for field: $imageField", e)
+                                bitmaps.add(null) // Placeholder for error
                             }
+                        } else {
+                            Log.e("ImageRetrieval", "Invalid or missing Base64 string for field: $imageField")
+                            bitmaps.add(null) // Placeholder for invalid/missing Base64
                         }
                     }
 
-                    imageUris(uris)
+                    // Callback with retrieved Bitmaps (including null placeholders)
+                    imageBitmaps(bitmaps)
                 } else {
                     Log.e("Firestore", "Document does not exist")
-                    imageUris(emptyList())
+                    imageBitmaps(List(imageFields.size) { null }) // All placeholders
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error retrieving document", e)
-                imageUris(emptyList())
+                imageBitmaps(List(imageFields.size) { null }) // All placeholders
             }
     }
+
 
     // Retrieve image from Firestore (Base64)
 //    fun retrieveImageFromFirestore(context: Context, documentId: String, userId: String, imageField: String, imageUri: MutableState<Uri?>) {
@@ -178,5 +194,14 @@ class ImageUtils{
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
         val path = MediaStore.Images.Media.insertImage(context.contentResolver, bitmap, "Image", null)
         return Uri.parse(path)
+    }
+
+    fun isValidBase64(base64Str: String): Boolean {
+        return try {
+            Base64.decode(base64Str, Base64.DEFAULT)
+            true
+        } catch (e: IllegalArgumentException) {
+            false
+        }
     }
 }
