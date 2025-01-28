@@ -13,7 +13,6 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.ByteArrayOutputStream
-import kotlin.text.get
 
 class ImageUtils{
 
