@@ -14,6 +14,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+
+app/google-services.json
+
 # Package Files #
 *.jar
 *.war
